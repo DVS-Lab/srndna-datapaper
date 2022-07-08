@@ -27,8 +27,10 @@ singularity run --cleanenv \
 -B $maindir:/base \
 -B /data/tools/licenses:/opts \
 -B $scratchdir:/scratch \
-/data/tools/fmriprep-20.2.3.simg \
-/base/bids /base/derivatives \
+/data/tools/fmriprep-21.0.2.simg \
+/base/bids /base/derivatives/fmriprep \
 participant --participant_label $sub \
+--cifti-output \
+--output-spaces fsLR MNI152NLin2009cAsym fsaverage \
 --stop-on-first-crash \
 --fs-no-reconall --fs-license-file /opts/fs_license.txt -w /scratch
