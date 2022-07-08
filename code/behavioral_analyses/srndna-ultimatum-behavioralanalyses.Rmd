@@ -1,0 +1,116 @@
+---
+title: "srndna-ultimatum-behavioralanalyses"
+author: "Rita M Ludwig"
+date: "4/14/2022"
+output: html_document
+---
+
+```{r load_packages, include=FALSE}
+library(tidyverse)
+library(dplyr)
+library(stringr)
+library(tools)
+library(lme4)
+```
+```{r set_path, include=FALSE, eval=FALSE}
+# Set the correct path to the behavioral data folder
+setwd("/Users/rx/Desktop/srndna-ultimatum_data/")
+# A REMINDER: I removed sub-143 for now, not sure what's going on with their EV file
+```
+```{r create_dataframes, include=FALSE}
+# Import .tsv files into seperate tables, create a column for subid, and save
+filenames = list.files(pattern = "sub-*")
+filelist = vector()
+for(i in filenames){
+  subnu = str_extract(i,"^[a-z]{3}-[0-9]{3}")
+  runnu = str_extract(i,"run-[0-9]{2}")
+  df = paste(subnu,runnu,sep = "_")
+  filelist[[length(filelist) + 1]] = df 
+  assign(paste(df), read.table(paste(i), header=TRUE))
+  eval(as.name(df)) %>% mutate(participant_id = subnu) %>%
+    assign(paste0(df),.,envir = .GlobalEnv)
+}
+
+# Combine data tables into single EV dataframe, remove the many many individual data tables
+EVs = do.call(rbind, mget(filelist))
+rm(list = filelist)
+
+# Clean up the participants data table to prep it for merging
+participantsdata = read.table("participants.tsv", header = TRUE) %>%
+  mutate(agecat = ifelse(age >= 60, "older",
+                    ifelse(age < 60, "younger", NA))) %>%
+  mutate(agedummy = ifelse(age >= 60, 1,
+                    ifelse(age < 60, 0, NA)))
+
+# Create a merged data frame with participants info, drop unnecessary columns, create new columns for analysis prep, drop duplicate rows
+# Create partner column: 1 = computer, 2 = outgroup, 3 = ingroup
+# Create participant response column: 0 = reject, 1 = accept
+# IsFairBlock: 1 = fair, 0  unfair
+trialdf=full_join(participantsdata, EVs, by = "participant_id") %>%
+  subset(., select= -c(sex, group, duration, onset, response_time)) %>% 
+  mutate(partner = ifelse(str_detect(trial_type, "computer"), 1,
+                          ifelse(str_detect(trial_type, "outgroup"), 2,
+                                 ifelse(str_detect(trial_type, "ingroup"), 3, NA)))) %>%
+  mutate(response = ifelse(str_detect(trial_type, "reject"), 0,
+                        ifelse(str_detect(trial_type, "accept"), 1, NA))) %>%
+  drop_na(response)
+
+# Delete individual EV dataframes and other excess objects in environment
+rm(EVs, participantsdata, filelist, filenames, i, runnu, subnu)
+
+# Calculate aproportion of accept/reject responses for each participant within each block type x partner (i.e. computer x fair, computer x unfair, outgroup x fair, etc.)
+trialdf = trialdf %>%
+  group_by(participant_id) %>%
+  mutate(avg_compFair = mean(ifelse(IsFairBlock == 1 & partner == 1, response, NA), na.rm=T)) %>%
+  mutate(avg_compUnfair = mean(ifelse(IsFairBlock == 0 & partner == 1, response, NA), na.rm=T)) %>%
+  mutate(avg_outgroupFair = mean(ifelse(IsFairBlock == 1 & partner == 2, response, NA), na.rm=T)) %>%
+  mutate(avg_outgroupUnfair = mean(ifelse(IsFairBlock == 0 & partner == 2, response, NA), na.rm=T)) %>%
+  mutate(avg_ingroupFair = mean(ifelse(IsFairBlock == 1 & partner == 3, response, NA), na.rm=T)) %>%
+  mutate(avg_ingroupUnfair = mean(ifelse(IsFairBlock == 0 & partner == 3, response, NA), na.rm=T))
+
+write.csv(trialdf,file="srndna-ultimatum-behavioral-data_pertrial.csv")
+
+# Create a final dataframe to work with that just contains participant id, block and partner type, and porportion accept values
+df = trialdf %>%
+  subset(select = c(participant_id, partner, IsFairBlock, avg_compFair, avg_compUnfair, avg_outgroupFair, avg_outgroupUnfair, avg_ingroupFair, avg_ingroupUnfair)) %>%
+  group_by_at(vars(participant_id, partner, IsFairBlock)) %>%
+  unique(.) %>%
+  mutate(
+    proportion_accept = case_when(
+      IsFairBlock == 1 & partner == 1 ~ avg_compFair,
+      IsFairBlock == 0 & partner == 1 ~ avg_compUnfair,
+      IsFairBlock == 1 & partner == 2 ~ avg_outgroupFair,
+      IsFairBlock == 0 & partner == 2 ~ avg_outgroupUnfair,
+      IsFairBlock == 1 & partner == 3 ~ avg_ingroupFair,
+      IsFairBlock == 0 & partner == 3 ~ avg_ingroupUnfair
+    )
+  ) %>%
+  subset(select = -c (avg_compFair, avg_compUnfair, avg_outgroupFair, avg_outgroupUnfair, avg_ingroupFair, avg_ingroupUnfair))
+
+write.csv(df,file="srndna-ultimatum-behavioral-data.csv")
+
+# Remove the per trial data frame if not using
+#rm(trialdf)
+```
+Using these data from the srndna-ultimatum task, we will test the following hypotheses using the analysis plan pre-registered on [As Predicted](https://aspredicted.org/blind.php?x=43V_3R7):
+
+H1.1: All participants will reject more unfair offers from human partners as compared to computer partners; this effect will be stronger in younger adults.
+H1.2: Within social conditions, younger adults will show increased rates of acceptance when interacting with younger vs. older partners; older adults’ rates of acceptance will not differ between partners.
+H1.1 & H1.2 Tests: A mixed effects linear regression will examine effects of participant age, offer amount and partner age on rejection rates.
+```{r hypotheses_testing}
+## Copying Dominic's code from srndna/behavioralAnalyses/UGBehaviorAnalyses_DF.R
+
+#Repeated Measures, fixed effects only
+Partner_OfferType<-lm(proportion_accept~partner*IsFairBlock,data=df)
+#regression output
+summary(Partner_OfferType)
+#output as ANOVA (f-statistic)
+summary(aov(Partner_OfferType))
+
+#Repeated Measures using lmer, modeling subject as random effect
+lmer_Partner_OfferType<-lmer(proportion_accept~partner*IsFairBlock + (1|participant_id),data = df)
+#output of lmer
+summary(lmer_Partner_OfferType)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
