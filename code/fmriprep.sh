@@ -33,4 +33,4 @@ participant --participant_label $sub \
 --cifti-output \
 --output-spaces fsLR MNI152NLin2009cAsym fsaverage \
 --stop-on-first-crash \
---fs-no-reconall --fs-license-file /opts/fs_license.txt -w /scratch
+--fs-license-file /opts/fs_license.txt -w /scratch
