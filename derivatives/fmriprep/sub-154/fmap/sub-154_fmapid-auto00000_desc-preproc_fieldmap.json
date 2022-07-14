@@ -1,0 +1,22 @@
+{
+  "AnatomicalReference": "sub-154_fmapid-auto00000_desc-magnitude_fieldmap.nii.gz",
+  "AssociatedCoefficients": [
+    "sub-154_fmapid-auto00000_desc-coeff0_fieldmap.nii.gz",
+    "sub-154_fmapid-auto00000_desc-coeff1_fieldmap.nii.gz"
+  ],
+  "B0FieldIdentifier": "auto_00000",
+  "IntendedFor": [
+    "func/sub-154_task-sharedreward_run-01_bold.nii.gz",
+    "func/sub-154_task-sharedreward_run-02_bold.nii.gz",
+    "func/sub-154_task-trust_run-01_bold.nii.gz",
+    "func/sub-154_task-trust_run-02_bold.nii.gz",
+    "func/sub-154_task-ultimatum_run-01_bold.nii.gz",
+    "func/sub-154_task-ultimatum_run-02_bold.nii.gz"
+  ],
+  "RawSources": [
+    "/base/bids/sub-154/fmap/sub-154_phasediff.nii.gz",
+    "/base/bids/sub-154/fmap/sub-154_magnitude1.nii.gz",
+    "/base/bids/sub-154/fmap/sub-154_magnitude2.nii.gz"
+  ],
+  "Units": "Hz"
+}
