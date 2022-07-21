@@ -1,7 +1,11 @@
-#!/usr/bin/env python
+#/bin/env python
 # coding: utf-8
 
-# In[39]:
+
+
+
+
+
 
 
 import os
@@ -13,6 +17,7 @@ import re
 
 
 task='ultimatum'
+#task='sharedreward'
 bidsdir='/data/projects/srndna-datapaper/bids'
 allfiles = [os.path.join(root,f) for root,dirs,files in os.walk(bidsdir) for f in files if 
             (('task-%s'%(task) in f))&(f.endswith('events.tsv'))]
@@ -32,7 +37,7 @@ for f in allfiles:
     except AttributeError:
         print("can't find run", f)
 
-    OutDir='/data/projects/srndna-datapaper/derivatives/fsl/EVfiles/sub-%s/SingleTrialEVs/run%s'%(sub,run)
+    OutDir='/data/projects/srndna-datapaper/derivatives/fsl/EVfiles/sub-%s/SingleTrialEVs/task-%s/run%s'%(sub,task,run)
     os.makedirs(OutDir,exist_ok=True)
     df=pd.read_csv(f,sep='\t')
     df=df[~df['trial_type'].str.contains('event_RT')]

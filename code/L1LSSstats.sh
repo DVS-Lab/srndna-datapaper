@@ -14,8 +14,9 @@ scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 maindir="$(dirname "$scriptdir")"
 logs=$maindir/logs
 
-# study-specific inputs
-TASK=ultimatum
+# study-specific input
+TASK=sharedreward
+#TASK=ultimatum
 sm=6 # this is already hard coded into all fsf files
 sub=$1
 run=$2
@@ -37,7 +38,7 @@ if [ ! -e $CONFOUNDEVS ]; then
 fi
 
 # EV files
-EVDIR=${maindir}/derivatives/fsl/EVfiles/sub-${sub}/SingleTrialEVs/run0${run}
+EVDIR=${maindir}/derivatives/fsl/EVfiles/sub-${sub}/SingleTrialEVs/task-${TASK}/run0${run}
 SINGLETRIAL=${EVDIR}/trialmodel-${trial}_estimage-single.tsv
 OTHERTRIAL=${EVDIR}/trialmodel-${trial}_estimage-other.tsv
 
