@@ -13,7 +13,7 @@ dsroot="$(dirname "$codedir")"
 
 
 
-Run MRIQC on subject
+#Run MRIQC on subject
 
 # make derivatives folder if it doesn't exist.
 # let's keep this out of bids for now
