@@ -15,7 +15,8 @@ maindir="$(dirname "$scriptdir")"
 logs=$maindir/logs
 
 # study-specific input
-TASK=sharedreward
+TASK=trust
+#TASK=sharedreward
 #TASK=ultimatum
 sm=6 # this is already hard coded into all fsf files
 sub=$1
@@ -41,6 +42,7 @@ fi
 EVDIR=${maindir}/derivatives/fsl/EVfiles/sub-${sub}/SingleTrialEVs/task-${TASK}/run0${run}
 SINGLETRIAL=${EVDIR}/trialmodel-${trial}_estimage-single.tsv
 OTHERTRIAL=${EVDIR}/trialmodel-${trial}_estimage-other.tsv
+DECISIONPHASE=${EVDIR}/trialmodel-decisionphase_.tsv
 
 # create common directory for zstat outputs
 zoutdir=${MAINOUTPUT}/LSS-images_task-${TASK}_model-01_type-act_run-0${run}
@@ -145,7 +147,16 @@ else # otherwise, do activation and seed-based ppi
 	# create template and run analyses
 	ITEMPLATE=${maindir}/templates/L1LSS_task-${TASK}_model-01_type-${TYPE}.fsf
 	OTEMPLATE=${MAINOUTPUT}/L1LSS_sub-${sub}_task-${TASK}_model-01_type-${TYPE}_run-0${run}_trial-${trialpadded}.fsf
-	if [ "$ppi" == "0" ]; then
+	if [ "$ppi" == "0" ] && [ "$TASK" == "trust" ]; then
+		sed -e 's@OUTPUT@'$OUTPUT'@g' \
+		-e 's@DATA@'$DATA'@g' \
+		-e 's@SINGLETRIAL@'$SINGLETRIAL'@g' \
+		-e 's@OTHERTRIAL@'$OTHERTRIAL'@g' \
+		-e 's@DECISIONPHASE@'$DECISIONPHASE'@g' \
+		-e 's@CONFOUNDEVS@'$CONFOUNDEVS'@g' \
+		-e 's@NVOLUMES@'$NVOLUMES'@g' \
+		<$ITEMPLATE> $OTEMPLATE
+	elif [ "$ppi" == "0" ]; then
 		sed -e 's@OUTPUT@'$OUTPUT'@g' \
 		-e 's@DATA@'$DATA'@g' \
 		-e 's@SINGLETRIAL@'$SINGLETRIAL'@g' \
