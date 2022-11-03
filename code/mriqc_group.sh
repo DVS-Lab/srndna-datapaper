@@ -32,6 +32,6 @@ singularity run --cleanenv \
 -B $dsroot/bids:/data \
 -B $dsroot/derivatives/mriqc:/out \
 -B $scratch:/scratch \
-/data/tools/mriqc-0.16.1.simg \
+/data/tools/mriqc-22.0.6.simg \
 /data /out \
 group -w /scratch
