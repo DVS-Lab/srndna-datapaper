@@ -1,23 +1,25 @@
 {
-  "Acknowledgements": "TODO: whom you want to acknowledge",
+  "Acknowledgements": "This work was supported, in part, by grants from the National Institutes of Health (R21-MH113917, R03-DA046733, and RF1-AG067011 to DVS and R15-MH122927 to DSF) and a Pilot Grant from the Scientific Research Network on Decision Neuroscience and Aging [to DVS; Subaward of NIH R24-AG054355 (PI Gregory Samanez-Larkin)]. We thank Elizabeth Beard for assistance with task coding, Victoria Kelly, Katherine Hackett, Dennis Desalme, Ben Muzekari, Isaac Levy, Gemma Goldstein, and Srikar Katta for assistance with participant recruitment and data collection. DVS was a Research Fellow of the Public Policy Lab at Temple University during the curation of this dataset (2019-2020 academic year).",
   "Authors": [
-    "TODO:",
     "David V. Smith",
-    "Dominic Fareri",
-    "..."
+    "Rita Ludwig",
+    "Jeffrey Dennison",
+    "Tania Giovannetti",
+    "Dominic Fareri"
   ],
   "BIDSVersion": "1.4.1",
   "DatasetDOI": "TODO: eventually a DOI for the dataset",
   "Funding": [
-    "TODO",
-    "GRANT #1",
-    "GRANT #2"
+    "Pilot Grant from Scientific Research Network on Decision Neuroscience and Aging (awarded to DVS; subaward of NIH R24-AG054355, PI Gregory Samanez-Larkin)",
+    "NIH RF1-AG067011 (awarded to DVS)",
+    "NIH R21-MH113917 (awarded to DVS)",
+    "NIH R03-DA046733 (awarded to DVS)",
+    "NIH R15-MH122927 (awarded to DSF)"
   ],
-  "HowToAcknowledge": "TODO: describe how to acknowledge -- either cite a corresponding paper, or just in acknowledgement section",
+  "HowToAcknowledge": "Please consider citing our NeuroImage paper and our Data Descriptor (submitted to Scientific Data and available on bioRxiv). See references and links below.",
   "License": "TODO: choose a license, e.g. PDDL (http://opendatacommons.org/licenses/pddl/)",
-  "Name": "TODO: name of the dataset",
+  "Name": "Social Reward Processing and Decision Making in Younger and Older Adults",
   "ReferencesAndLinks": [
-    "TODO",
-    "List of papers or websites"
+    "Fareri, D. S., Hackett, K., Tepfer, L. J., Kelly, V., Henninger, N., Reeck, C., Giovannetti, T., Smith, D.V. (2022). Age-related differences in ventral striatal and default mode network function during reciprocated trust. NeuroImage, 256, 119267. doi: https://doi.org/10.1016/j.neuroimage.2022.119267"
   ]
 }
