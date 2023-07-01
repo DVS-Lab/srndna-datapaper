@@ -149,4 +149,7 @@ derivatives/fmriprep/*/func/*_bold.json
 derivatives/fmriprep/*/func/*.gii
 derivatives/fmriprep/*/func/*.nii
 derivatives/fmriprep/sourcedata
+derivatives/tsnr
+derivatives/single_trials
+
 sub-*.html
