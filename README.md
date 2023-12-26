@@ -1,8 +1,5 @@
 # SRNDNA: Data Management and Preprocessing
-This repository contains the final code for managing and processing all of the data in our SRDNDA project. The data live on OpenNeuro with the citation below:
-
-David V. Smith and Dominic Fareri (2021). Social Reward Processing and Decision Making in Younger and Older Adults. OpenNeuro. [Dataset] doi: 10.18112/openneuro.ds003745.v1.0.0
-
+This repository contains the final code for managing and processing all of the data in our SRDNDA project. The data live on OpenNeuro (https://openneuro.org/datasets/ds003745/), and a preprint of a data paper has been posted to PsyArxiv (https://doi.org/10.31234/osf.io/k7d56) and is under consideration at Scientific Data.
 
 ## A few prerequisites and recommendations
 - Understand BIDS and be comfortable navigating Linux
