@@ -19,17 +19,17 @@ David V. Smith and Dominic Fareri (2021). Social Reward Processing and Decision 
   - `code`: analysis code
   - `derivatives`: stores derivates from our scripts
   - `bids`: contains the standardized "raw" in BIDS format (output of heudiconv)
-  - `stimuli`: psychopy scripts and matlab scripts for delivering stimuli and organizing output
+  - `stimuli`: psychopy scripts and matlab scripts for delivering stimuli and organizing output. This directory also contains the sourcedata for the raw behavioral data.
 
 
 ## Downloading Data and Running Preprocessing
 ```
 # get data via datalad
-git clone https://github.com/DVS-Lab/srndna-data
-cd srndna-data
+git clone https://github.com/DVS-Lab/srndna-datapaper
+cd srndna-datapaper
 datalad clone https://github.com/OpenNeuroDatasets/ds003745.git bids
-# the bids folder is a datalad dataset (currently is limited to task-trust)
-# you can get all of the data with the command below:
+# you can get all of the data with the commands below:
+cd bids
 datalad get sub-*
 
 # run preprocessing and generate confounds and timing files for analyses
