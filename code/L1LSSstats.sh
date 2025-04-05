@@ -22,17 +22,15 @@ run=$2
 ppi=0 # 0 for activation, otherwise seed region or network
 trial=$3
 trialpadded=`zeropad $3 2` # pad zeros
-logfile=$4
-echo "sub; ${sub} run: ${run} trial: ${trialpadded} log: ${logfile}"
 
 # set inputs and general outputs (should not need to chage across studies in Smith Lab)
 MAINOUTPUT=${maindir}/derivatives/fsl/sub-${sub}
 mkdir -p $MAINOUTPUT
-DATA=/ZPOOL/data/projects/srndna-datapaper/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz
+DATA=${maindir}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz
 NVOLUMES=`fslnvols ${DATA}`
-CONFOUNDEVS=/data/projects/srndna-datapaper/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv
+CONFOUNDEVS=${maindir}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv
 if [ ! -e $CONFOUNDEVS ]; then
-	echo "missing: $CONFOUNDEVS " >> $logfile
+	echo "missing: $CONFOUNDEVS " >> ${logs}/L1_missing-confounds.log
 	exit # exiting to ensure nothing gets run without confounds
 fi
 
@@ -138,7 +136,7 @@ else # otherwise, do activation and seed-based ppi
 	if [ -e ${zoutdir}/zstat_trial-${trial}.nii.gz ]; then
 		exit
 	else
-		echo "running: $OUTPUT " >> ${maindir}/re-runL1LSS.log
+		echo "running: $OUTPUT " >> ${logs}/re-runL1LSS.log
 		rm -rf ${OUTPUT}.feat
 	fi
 
