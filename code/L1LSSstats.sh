@@ -15,9 +15,7 @@ maindir="$(dirname "$scriptdir")"
 logs=$maindir/logs
 
 # study-specific input
-TASK=trust
-#TASK=sharedreward
-#TASK=ultimatum
+TASK=ultimatum
 sm=6 # this is already hard coded into all fsf files
 sub=$1
 run=$2
@@ -30,7 +28,7 @@ echo "sub; ${sub} run: ${run} trial: ${trialpadded} log: ${logfile}"
 # set inputs and general outputs (should not need to chage across studies in Smith Lab)
 MAINOUTPUT=${maindir}/derivatives/fsl/sub-${sub}
 mkdir -p $MAINOUTPUT
-DATA=/data/projects/srndna-datapaper/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz
+DATA=/ZPOOL/data/projects/srndna-datapaper/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz
 NVOLUMES=`fslnvols ${DATA}`
 CONFOUNDEVS=/data/projects/srndna-datapaper/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv
 if [ ! -e $CONFOUNDEVS ]; then
