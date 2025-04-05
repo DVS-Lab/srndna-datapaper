@@ -132,7 +132,7 @@ else # otherwise, do activation and seed-based ppi
 	fi
 
 	# check for output and skip existing
-	if [ -e ${zoutdir}/zstat_trial-${trial}.nii.gz ]; then
+	if [ -e ${zoutdir}/zstat_trial-${trialpadded}.nii.gz ]; then
 		exit
 	else
 		echo "running: $OUTPUT " >> ${logs}/re-runL1LSS.log
