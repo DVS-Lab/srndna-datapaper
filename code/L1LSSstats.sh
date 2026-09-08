@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 # This script will perform Level 1 statistics in FSL.
 # Rather than having multiple scripts, we are merging three analyses
 # into this one script:
@@ -13,14 +15,25 @@
 scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 maindir="$(dirname "$scriptdir")"
 logs=$maindir/logs
+mkdir -p "$logs"
 
 # study-specific input
-TASK=ultimatum
-sub=$1
-run=$2
+sub=${1:?usage: L1LSSstats.sh SUBJECT RUN TRIAL [TASK] [--force]}
+run=${2:?usage: L1LSSstats.sh SUBJECT RUN TRIAL [TASK] [--force]}
 ppi=0 # 0 for activation, otherwise seed region or network
-trial=$3
-trialpadded=`zeropad $3 2` # pad zeros
+trial=${3:?usage: L1LSSstats.sh SUBJECT RUN TRIAL [TASK] [--force]}
+TASK=${4:-ultimatum}
+force=${5:-}
+trialpadded=$(printf '%02d' "$trial")
+
+case "$TASK" in
+	ultimatum|trust|sharedreward) ;;
+	*) echo "unsupported task: $TASK" >&2; exit 2 ;;
+esac
+if [[ -n "$force" && "$force" != "--force" ]]; then
+	echo "fifth argument must be --force" >&2
+	exit 2
+fi
 
 # set inputs and general outputs (should not need to chage across studies in Smith Lab)
 MAINOUTPUT=${maindir}/derivatives/fsl/sub-${sub}
@@ -30,7 +43,7 @@ NVOLUMES=`fslnvols ${DATA}`
 CONFOUNDEVS=${maindir}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv
 if [ ! -e $CONFOUNDEVS ]; then
 	echo "missing: $CONFOUNDEVS " >> ${logs}/L1_missing-confounds.log
-	exit # exiting to ensure nothing gets run without confounds
+	exit 1 # exiting to ensure nothing gets run without confounds
 fi
 
 # EV files
@@ -132,7 +145,7 @@ else # otherwise, do activation and seed-based ppi
 	fi
 
 	# check for output and skip existing
-	if [ -e ${zoutdir}/zstat_trial-${trialpadded}.nii.gz ]; then
+	if [ -e ${zoutdir}/zstat_trial-${trialpadded}.nii.gz ] && [ "$force" != "--force" ]; then
 		exit
 	else
 		echo "running: $OUTPUT " >> ${logs}/re-runL1LSS.log
@@ -176,6 +189,7 @@ else # otherwise, do activation and seed-based ppi
 fi
 
 
-# copy zstat image to common output folder and delete feat output
-cp ${OUTPUT}.feat/stats/zstat1.nii.gz ${zoutdir}/zstat_trial-${trialpadded}.nii.gz
+# Copy only a successfully generated image, then delete the temporary FEAT output.
+cp ${OUTPUT}.feat/stats/zstat1.nii.gz ${zoutdir}/zstat_trial-${trialpadded}.nii.gz.tmp
+mv ${zoutdir}/zstat_trial-${trialpadded}.nii.gz.tmp ${zoutdir}/zstat_trial-${trialpadded}.nii.gz
 rm -rf ${OUTPUT}.feat

@@ -15,6 +15,30 @@ Some files cannot be shared publicly. And some raw source data are in non-standa
 - Analysis scripts are in task-specific repositories
 - e.g., https://github.com/DVS-Lab/srndna-trustgame
 
+## Data corrections
+
+`recover_sub144_ultimatum_events.py` reconstructs the two sub-144 Ultimatum
+events files from the second complete session stored in each concatenated raw
+acquisition log. It updates the BIDS file and both tracked legacy mirrors. Run
+`python3 code/recover_sub144_ultimatum_events.py --check` to verify that the
+tracked files remain reproducible from the raw logs.
+
+## Trust single-trial models
+
+The Trust LSS template uses no additional spatial smoothing, consistent with
+the other task-specific LSS templates. To rebuild the Trust single-trial EVs
+and force regeneration of the LSS images on a Linux system with FSL and the
+untracked imaging derivatives available:
+
+```bash
+python3 code/makeSingleTrials_trust.py --clean
+NCORES=30 bash code/run_L1LSSstats.sh trust --force
+```
+
+Set `SUBJECTS="104 105"` before the second command to limit a test run. The
+runner writes each completed z-statistic through a temporary file before
+replacing the prior image.
+
 
 
 

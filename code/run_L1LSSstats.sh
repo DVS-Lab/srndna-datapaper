@@ -1,26 +1,82 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-# ensure paths are correct irrespective from where user runs the script
-scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+# Run LSS models for every generated trial EV belonging to one task.
+set -euo pipefail
+
+scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 basedir="$(dirname "$scriptdir")"
 
-# create log file to record what we did and when
-logs=$basedir/logs
+TASK=${1:-ultimatum}
+force=${2:-}
+NCORES=${NCORES:-30}
+SUBJECTS=${SUBJECTS:-}
 
-# list subject numbers and run numbers to run
-#for sub in 104 105 106 107 108 109 110 111 112 113 115 116 117 118 120 121 122 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 140 141 142 143 144 145 147 149 150 151 152 153 154 155 156 157 158 159; do
-for sub in 104; do
+case "$TASK" in
+	ultimatum|trust|sharedreward) ;;
+	*) echo "usage: $0 {ultimatum|trust|sharedreward} [--force]" >&2; exit 2 ;;
+esac
+if [[ -n "$force" && "$force" != "--force" ]]; then
+	echo "usage: $0 {ultimatum|trust|sharedreward} [--force]" >&2
+	exit 2
+fi
+if ! [[ "$NCORES" =~ ^[1-9][0-9]*$ ]]; then
+	echo "NCORES must be a positive integer" >&2
+	exit 2
+fi
 
-	  nruns=2
-	  for run in `seq $nruns`; do
-			for trial in `seq 72`; do
-			  	# Manages the number of jobs and cores
-			  	SCRIPTNAME=${basedir}/code/L1LSSstats.sh
-			  	NCORES=30
-			  	while [ $(ps -ef | grep -v grep | grep $SCRIPTNAME | wc -l) -ge $NCORES ]; do
-			    		sleep 1s
-			  	done
-			  	bash $SCRIPTNAME $sub $run $trial &
-			done
-	  done
+ev_root="${basedir}/derivatives/fsl/EVfiles"
+mapfile -t ev_files < <(
+	find "$ev_root" -type f \
+		-path "*/SingleTrialEVs/task-${TASK}/run*/trialmodel-*_estimage-single.tsv" \
+		| sort
+)
+if (( ${#ev_files[@]} == 0 )); then
+	echo "no ${TASK} single-trial EV files found under ${ev_root}" >&2
+	exit 1
+fi
+
+pids=()
+scheduled=0
+wait_batch() {
+	local pid
+	local failed=0
+	for pid in "${pids[@]}"; do
+		wait "$pid" || failed=1
+	done
+	pids=()
+	if (( failed )); then
+		echo "one or more LSS jobs failed; inspect ${basedir}/logs" >&2
+		return 1
+	fi
+}
+
+for ev_file in "${ev_files[@]}"; do
+	if [[ "$ev_file" =~ /sub-([0-9]+)/SingleTrialEVs/task-${TASK}/run([0-9]+)/trialmodel-([0-9]+)_estimage-single\.tsv$ ]]; then
+		sub=${BASH_REMATCH[1]}
+		run=$((10#${BASH_REMATCH[2]}))
+		trial=$((10#${BASH_REMATCH[3]}))
+	else
+		echo "could not parse EV path: $ev_file" >&2
+		exit 1
+	fi
+
+	if [[ -n "$SUBJECTS" && " $SUBJECTS " != *" $sub "* ]]; then
+		continue
+	fi
+
+	args=("$sub" "$run" "$trial" "$TASK")
+	if [[ "$force" == "--force" ]]; then
+		args+=("--force")
+	fi
+	bash "${scriptdir}/L1LSSstats.sh" "${args[@]}" &
+	pids+=("$!")
+	((scheduled += 1))
+	if (( ${#pids[@]} >= NCORES )); then
+		wait_batch
+	fi
 done
+
+if (( ${#pids[@]} )); then
+	wait_batch
+fi
+echo "Completed ${scheduled} ${TASK} LSS models"
