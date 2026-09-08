@@ -4,6 +4,15 @@ cd ..
 dsdir = pwd;
 cd(maindir)
 
+% The sub-144 raw logs contain two complete sessions separated by a repeated
+% header. The first is the recovered sub-143 session and the second is sub-144.
+% textscan stops at the repeated header, so prevent this legacy converter from
+% silently restoring the wrong session. Use code/recover_sub144_ultimatum_events.py.
+if subj == 144
+    error(['sub-144 requires the repository recovery script: ' ...
+        'python3 code/recover_sub144_ultimatum_events.py']);
+end
+
 try
     
     

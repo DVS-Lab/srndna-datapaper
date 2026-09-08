@@ -3,3 +3,8 @@ TODOs:
 	- verify and possibly extend information in participants.tsv (see for example http://datasets.datalad.org/?dir=/openfmri/ds000208)
 	- fill out dataset_description.json, README, sourcedata/README (if present)
 	- provide _events.tsv file for each _bold.nii.gz with onsets of events (see  '8.5 Task events'  of BIDS specification)
+
+Corrections after 0.0.1:
+	- Reconstructed the sub-144 Ultimatum events files from the second complete
+	  session in each concatenated acquisition log. The first logged session is
+	  the separately recovered sub-143 session.
