@@ -70,7 +70,7 @@ REPAIRS = (
     Repair(
         "bids/CHANGES",
         "CHANGES",
-        "9db91f9523cdaf2049c9ed25a47bbbd7ab16816a93eaa90930c8c9566d227fcc",
+        "ff86e33b0f82a4d4e5ed7c48d60ffb41b13e9c8e109f025f8d1684dce292b3e5",
     ),
 )
 
