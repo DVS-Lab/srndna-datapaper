@@ -133,13 +133,41 @@ class LssConfigurationTests(unittest.TestCase):
                 MODULE.main(["trust", "--dry-run"])
         self.assertEqual(raised.exception.code, 2)
 
+    def test_ev_cli_supports_external_output_with_dataset_root(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output_root = Path(directory) / "EVfiles"
+            with contextlib.redirect_stdout(io.StringIO()):
+                result = MODULE.main(
+                    [
+                        "ultimatum",
+                        "--dataset-root",
+                        str(REPO_ROOT / "bids"),
+                        "--output-root",
+                        str(output_root),
+                        "--subject",
+                        "144",
+                        "--run",
+                        "1",
+                        "--clean",
+                    ]
+                )
+            self.assertEqual(result, 0)
+            evdir = (
+                output_root
+                / "sub-144/SingleTrialEVs/task-ultimatum/run01"
+            )
+            self.assertEqual(
+                len(list(evdir.glob("trialmodel-*_estimage-single.tsv"))), 72
+            )
+
     def test_runner_dry_run_honors_dataset_subject_and_run_scope(self):
         runner = REPO_ROOT / "code" / "run_L1LSSstats.sh"
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            work = root / "work"
             evdir = (
-                root
-                / "derivatives/fsl/EVfiles/sub-144/SingleTrialEVs"
+                work
+                / "EVfiles/sub-144/SingleTrialEVs"
                 / "task-ultimatum/run01"
             )
             evdir.mkdir(parents=True)
@@ -169,6 +197,8 @@ class LssConfigurationTests(unittest.TestCase):
                     "ultimatum",
                     "--dataset-root",
                     str(root),
+                    "--work-root",
+                    str(work),
                     "--subject",
                     "sub-144",
                     "--run",
@@ -184,8 +214,8 @@ class LssConfigurationTests(unittest.TestCase):
             self.assertIn("Trial models to execute: 1", result.stdout)
 
             trial_output = (
-                root
-                / "derivatives/fsl/sub-144"
+                work
+                / "sub-144"
                 / "LSS-images_task-ultimatum_model-01_type-act_run-01"
                 / "zstat_trial-01.nii.gz"
             )
@@ -218,6 +248,8 @@ class LssConfigurationTests(unittest.TestCase):
                     "ultimatum",
                     "--dataset-root",
                     str(root),
+                    "--work-root",
+                    str(work),
                     "--subject",
                     "144",
                     "--run",
@@ -237,14 +269,15 @@ class LssConfigurationTests(unittest.TestCase):
         packer = REPO_ROOT / "code" / "pack_L1LSSstats.sh"
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            work = root / "work"
             evdir = (
-                root
-                / "derivatives/fsl/EVfiles/sub-144/SingleTrialEVs"
+                work
+                / "EVfiles/sub-144/SingleTrialEVs"
                 / "task-ultimatum/run01"
             )
             zdir = (
-                root
-                / "derivatives/fsl/sub-144"
+                work
+                / "sub-144"
                 / "LSS-images_task-ultimatum_model-01_type-act_run-01"
             )
             bindir = root / "bin"
@@ -272,6 +305,7 @@ class LssConfigurationTests(unittest.TestCase):
             environment = os.environ.copy()
             environment["PATH"] = f"{bindir}:{environment['PATH']}"
             environment["SRNDNA_DATASET_ROOT"] = str(root)
+            environment["SRNDNA_LSS_WORK_ROOT"] = str(work)
 
             result = subprocess.run(
                 ["bash", str(packer), "ultimatum", "144", "1"],
@@ -292,11 +326,12 @@ class LssConfigurationTests(unittest.TestCase):
         runner = REPO_ROOT / "code" / "L1LSSstats.sh"
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
+            work = root / "work"
             func = root / "derivatives/fmriprep/sub-144/func"
             confound_dir = root / "derivatives/fsl/confounds/sub-144"
             evdir = (
-                root
-                / "derivatives/fsl/EVfiles/sub-144/SingleTrialEVs"
+                work
+                / "EVfiles/sub-144/SingleTrialEVs"
                 / "task-ultimatum/run01"
             )
             bindir = root / "bin"
@@ -330,6 +365,7 @@ class LssConfigurationTests(unittest.TestCase):
             environment = os.environ.copy()
             environment["PATH"] = f"{bindir}:{environment['PATH']}"
             environment["SRNDNA_DATASET_ROOT"] = str(root)
+            environment["SRNDNA_LSS_WORK_ROOT"] = str(work)
 
             result = subprocess.run(
                 ["bash", str(runner), "144", "1", "1", "ultimatum", "--force"],
@@ -340,8 +376,8 @@ class LssConfigurationTests(unittest.TestCase):
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             trial_output = (
-                root
-                / "derivatives/fsl/sub-144"
+                work
+                / "sub-144"
                 / "LSS-images_task-ultimatum_model-01_type-act_run-01"
                 / "zstat_trial-01.nii.gz"
             )
@@ -351,8 +387,8 @@ class LssConfigurationTests(unittest.TestCase):
             )
             self.assertFalse(
                 (
-                    root
-                    / "derivatives/fsl/sub-144"
+                    work
+                    / "sub-144"
                     / "L1LSS_task-ultimatum_model-01_type-act_run-01_trial-01.feat"
                 ).exists()
             )

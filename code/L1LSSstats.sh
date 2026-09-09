@@ -45,13 +45,14 @@ done
 scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 repo_root="$(dirname "$scriptdir")"
 dataset_root=${SRNDNA_DATASET_ROOT:-$repo_root}
-logs="${dataset_root}/logs"
-main_output="${dataset_root}/derivatives/fsl/sub-${sub}"
+work_root=${SRNDNA_LSS_WORK_ROOT:-${dataset_root}/derivatives/fsl}
+logs="${work_root}/logs"
+main_output="${work_root}/sub-${sub}"
 mkdir -p "$logs" "$main_output"
 
 data="${dataset_root}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"
 confounds="${dataset_root}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
-evdir="${dataset_root}/derivatives/fsl/EVfiles/sub-${sub}/SingleTrialEVs/task-${TASK}/run${run_padded}"
+evdir="${work_root}/EVfiles/sub-${sub}/SingleTrialEVs/task-${TASK}/run${run_padded}"
 single_trial="${evdir}/trialmodel-${trial}_estimage-single.tsv"
 other_trials="${evdir}/trialmodel-${trial}_estimage-other.tsv"
 decision_phase="${evdir}/trialmodel-decisionphase_.tsv"

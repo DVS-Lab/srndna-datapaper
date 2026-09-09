@@ -175,7 +175,10 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--output-root",
         type=Path,
-        help="FSL EV output root (default: repository derivatives/fsl/EVfiles)",
+        help=(
+            "FSL EV output root; may be outside --dataset-root so generated "
+            "work files are not staged for OpenNeuro upload"
+        ),
     )
     scope = parser.add_mutually_exclusive_group(required=True)
     scope.add_argument(
@@ -212,11 +215,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     repo_root = Path(__file__).resolve().parents[1]
-    if args.dataset_root and (args.bids_dir or args.output_root):
-        parser.error("--dataset-root cannot be combined with --bids-dir or --output-root")
+    if args.dataset_root and args.bids_dir:
+        parser.error("--dataset-root cannot be combined with --bids-dir")
     if args.dataset_root:
         bids_dir = args.dataset_root
-        output_root = args.dataset_root / "derivatives" / "fsl" / "EVfiles"
+        output_root = (
+            args.output_root
+            or args.dataset_root / "derivatives" / "fsl" / "EVfiles"
+        )
     else:
         bids_dir = args.bids_dir or repo_root / "bids"
         output_root = (

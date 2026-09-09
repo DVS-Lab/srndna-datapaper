@@ -54,16 +54,24 @@ the trial-wise z-statistics into the public 4D files under
 The analysis code and downloaded OpenNeuro dataset may live in separate
 directories. Pass the OpenNeuro BIDS root (the directory containing `sub-*`
 and `derivatives/`) with `--dataset-root`; templates are always read from this
-GitHub repository.
+GitHub repository. For production reruns, put generated EVs and trial-wise
+FEAT outputs outside the dataset: pass that directory's `EVfiles` child to the
+EV generator with `--output-root`, and pass the directory itself to the runner
+with `--work-root`. Only the final packed 4D files are then written into the
+OpenNeuro tree.
 
 Always preview a scope before running FEAT:
 
 ```bash
 python3 code/makeSingleTrials.py trust \
-  --dataset-root /path/to/openneuro-dataset --all-subjects --clean --dry-run
+  --dataset-root /path/to/openneuro-dataset \
+  --output-root /path/to/lss-work/EVfiles \
+  --all-subjects --clean --dry-run
 
 bash code/run_L1LSSstats.sh trust \
-  --dataset-root /path/to/openneuro-dataset --all-subjects --refresh --pack --dry-run
+  --dataset-root /path/to/openneuro-dataset \
+  --work-root /path/to/lss-work \
+  --all-subjects --refresh --pack --dry-run
 ```
 
 Remove `--dry-run` from the EV command first, then from the FEAT command. The
@@ -79,10 +87,12 @@ For a repaired subset, repeat `--subject` and `--run` as needed:
 ```bash
 python3 code/makeSingleTrials.py ultimatum \
   --dataset-root /path/to/openneuro-dataset \
+  --output-root /path/to/lss-work/EVfiles \
   --subject 144 --run 1 --run 2 --clean --dry-run
 
 bash code/run_L1LSSstats.sh ultimatum \
   --dataset-root /path/to/openneuro-dataset \
+  --work-root /path/to/lss-work \
   --subject 144 --run 1 --run 2 --refresh --pack --dry-run
 ```
 

@@ -14,6 +14,7 @@ Options:
   --subject ID      include one participant; repeatable (144 or sub-144)
   --run RUN         include one run; repeatable (2 or run-02)
   --dataset-root P  OpenNeuro BIDS root containing sub-* and derivatives/
+  --work-root P     external root for EVs and trial-wise FEAT intermediates
   --refresh         replace outputs lacking a current input fingerprint
   --force           replace completed trial images in the selected scope
   --pack            pack completed trial images into public 4D derivatives
@@ -46,6 +47,7 @@ refresh=0
 pack=0
 dry_run=0
 dataset_root=
+work_root=
 subjects=()
 runs=()
 while (( $# )); do
@@ -67,6 +69,11 @@ while (( $# )); do
 		--dataset-root)
 			(( $# >= 2 )) || { usage; exit 2; }
 			dataset_root=$2
+			shift 2
+			;;
+		--work-root)
+			(( $# >= 2 )) || { usage; exit 2; }
+			work_root=$2
 			shift 2
 			;;
 		--force)
@@ -139,7 +146,10 @@ if [[ ! -d "$dataset_root" ]]; then
 	exit 1
 fi
 dataset_root="$(cd "$dataset_root" >/dev/null 2>&1 && pwd)"
-ev_root="${dataset_root}/derivatives/fsl/EVfiles"
+work_root=${work_root:-${dataset_root}/derivatives/fsl}
+mkdir -p "$work_root"
+work_root="$(cd "$work_root" >/dev/null 2>&1 && pwd)"
+ev_root="${work_root}/EVfiles"
 if [[ ! -d "$ev_root" ]]; then
 	echo "EV root does not exist: $ev_root" >&2
 	exit 1
@@ -207,7 +217,7 @@ for ev_file in "${all_ev_files[@]}"; do
 		((missing_inputs += 1))
 	fi
 	trial_padded=$(printf '%02d' "$trial")
-	output="${dataset_root}/derivatives/fsl/sub-${sub}/LSS-images_task-${TASK}_model-01_type-act_run-$(printf '%02d' "$run")/zstat_trial-${trial_padded}.nii.gz"
+	output="${work_root}/sub-${sub}/LSS-images_task-${TASK}_model-01_type-act_run-$(printf '%02d' "$run")/zstat_trial-${trial_padded}.nii.gz"
 	fingerprint_file="${output%.nii.gz}.lss-inputs.cksum"
 	data="${dataset_root}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"
 	confounds="${dataset_root}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
@@ -268,6 +278,7 @@ else
 fi
 echo "Task: $TASK"
 echo "Dataset root: $dataset_root"
+echo "Work root: $work_root"
 echo "Participant-runs: ${#run_keys[@]}"
 echo "Selected trial models: $selected"
 echo "Completed trial images already present: $existing"
@@ -300,7 +311,7 @@ for index in "${!selected_ev_files[@]}"; do
 	run=$((10#${BASH_REMATCH[2]}))
 	trial=$((10#${BASH_REMATCH[3]}))
 	trial_padded=$(printf '%02d' "$trial")
-	output="${dataset_root}/derivatives/fsl/sub-${sub}/LSS-images_task-${TASK}_model-01_type-act_run-$(printf '%02d' "$run")/zstat_trial-${trial_padded}.nii.gz"
+	output="${work_root}/sub-${sub}/LSS-images_task-${TASK}_model-01_type-act_run-$(printf '%02d' "$run")/zstat_trial-${trial_padded}.nii.gz"
 	if (( refresh )); then
 		if (( selected_current_flags[$index] )); then
 			continue
@@ -313,6 +324,7 @@ for index in "${!selected_ev_files[@]}"; do
 		args+=("--force")
 	fi
 	SRNDNA_DATASET_ROOT="$dataset_root" \
+		SRNDNA_LSS_WORK_ROOT="$work_root" \
 		bash "${scriptdir}/L1LSSstats.sh" "${args[@]}" &
 	pids+=("$!")
 	((scheduled += 1))
@@ -324,7 +336,7 @@ if (( ${#pids[@]} )); then
 	wait_batch
 fi
 if (( failures )); then
-	echo "$failures LSS jobs failed; packing was not attempted; inspect ${dataset_root}/logs" >&2
+	echo "$failures LSS jobs failed; packing was not attempted; inspect ${work_root}/logs" >&2
 	exit 1
 fi
 echo "Completed $scheduled ${TASK} LSS models"
@@ -334,6 +346,7 @@ if (( pack )); then
 		sub=${key%%:*}
 		run=${key##*:}
 		SRNDNA_DATASET_ROOT="$dataset_root" \
+			SRNDNA_LSS_WORK_ROOT="$work_root" \
 			bash "${scriptdir}/pack_L1LSSstats.sh" "$TASK" "$sub" "$run"
 	done
 fi
