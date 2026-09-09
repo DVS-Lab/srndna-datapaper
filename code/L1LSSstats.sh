@@ -51,7 +51,7 @@ main_output="${work_root}/sub-${sub}"
 mkdir -p "$logs" "$main_output"
 
 data="${dataset_root}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"
-confounds="${dataset_root}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
+confounds="${work_root}/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
 evdir="${work_root}/EVfiles/sub-${sub}/SingleTrialEVs/task-${TASK}/run${run_padded}"
 single_trial="${evdir}/trialmodel-${trial}_estimage-single.tsv"
 other_trials="${evdir}/trialmodel-${trial}_estimage-other.tsv"

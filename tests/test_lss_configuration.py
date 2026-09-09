@@ -175,6 +175,15 @@ class LssConfigurationTests(unittest.TestCase):
                 (evdir / f"trialmodel-1_estimage-{kind}.tsv").write_text(
                     "1\t1\t1\n", encoding="utf-8"
                 )
+            unavailable_evdir = (
+                work
+                / "EVfiles/sub-245/SingleTrialEVs/task-ultimatum/run01"
+            )
+            unavailable_evdir.mkdir(parents=True)
+            for kind in ("single", "other"):
+                (unavailable_evdir / f"trialmodel-1_estimage-{kind}.tsv").write_text(
+                    "1\t1\t1\n", encoding="utf-8"
+                )
             func = root / "derivatives/fmriprep/sub-144/func"
             func.mkdir(parents=True)
             bold = (
@@ -184,7 +193,7 @@ class LssConfigurationTests(unittest.TestCase):
             bold.write_text(
                 "placeholder", encoding="utf-8"
             )
-            confounds = root / "derivatives/fsl/confounds/sub-144"
+            confounds = work / "confounds/sub-144"
             confounds.mkdir(parents=True)
             (confounds / "sub-144_task-ultimatum_run-1_desc-fslConfounds.tsv").write_text(
                 "0\n", encoding="utf-8"
@@ -199,8 +208,10 @@ class LssConfigurationTests(unittest.TestCase):
                     str(root),
                     "--work-root",
                     str(work),
-                    "--subject",
-                    "sub-144",
+                    "--available-runs",
+                    "--jobs",
+                    "44",
+                    "--all-subjects",
                     "--run",
                     "run-01",
                     "--dry-run",
@@ -212,6 +223,11 @@ class LssConfigurationTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("Selected trial models: 1", result.stdout)
             self.assertIn("Trial models to execute: 1", result.stdout)
+            self.assertIn("Concurrent FEAT jobs: 44", result.stdout)
+            self.assertIn(
+                "Skipped participant-runs without preprocessed BOLD: 1",
+                result.stdout,
+            )
 
             trial_output = (
                 work
@@ -328,7 +344,7 @@ class LssConfigurationTests(unittest.TestCase):
             root = Path(directory)
             work = root / "work"
             func = root / "derivatives/fmriprep/sub-144/func"
-            confound_dir = root / "derivatives/fsl/confounds/sub-144"
+            confound_dir = work / "confounds/sub-144"
             evdir = (
                 work
                 / "EVfiles/sub-144/SingleTrialEVs"

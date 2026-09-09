@@ -45,6 +45,18 @@ are present in the downloaded dataset.
 
 ## Single-trial LSS models
 
+`make_fsl_confounds.py` extracts cosine terms, non-steady-state indicators,
+six rigid-body motion parameters, six aCompCor components, and framewise
+displacement from each fMRIPrep confounds table. Missing numeric values are
+replaced with zero for FSL. Write these matrices to the external LSS work root:
+
+```bash
+python3 code/make_fsl_confounds.py trust \
+  --dataset-root /path/to/openneuro-dataset \
+  --output-root /path/to/lss-work/confounds \
+  --all-subjects --dry-run
+```
+
 `makeSingleTrials.py` generates EV files for Trust, Ultimatum, and
 SharedReward. `run_L1LSSstats.sh` requires an explicit participant scope,
 supports participant/run subsets, performs a dry-run preflight, and can pack
@@ -71,7 +83,8 @@ python3 code/makeSingleTrials.py trust \
 bash code/run_L1LSSstats.sh trust \
   --dataset-root /path/to/openneuro-dataset \
   --work-root /path/to/lss-work \
-  --all-subjects --refresh --pack --dry-run
+  --all-subjects --available-runs --jobs 44 \
+  --refresh --pack --dry-run
 ```
 
 Remove `--dry-run` from the EV command first, then from the FEAT command. The
@@ -96,10 +109,13 @@ bash code/run_L1LSSstats.sh ultimatum \
   --subject 144 --run 1 --run 2 --refresh --pack --dry-run
 ```
 
-Set `NCORES` for FEAT concurrency, for example `NCORES=20`. Packing happens
-only after every selected FEAT job succeeds. It uses the generated EV files as
-the trial manifest, checks that every expected z-statistic exists, verifies the
-packed volume count, and atomically replaces the corresponding public 4D file.
+Set FEAT concurrency explicitly with `--jobs`; `NCORES` remains supported as a
+fallback for legacy invocations. Packing happens only after every selected FEAT
+job succeeds. It uses the generated EV files as the trial manifest, checks that
+every expected z-statistic exists, verifies the packed volume count, and
+atomically replaces the corresponding public 4D file. `--available-runs`
+restricts a whole-task rerun to participant-runs with a preprocessed BOLD image;
+all other selected inputs are still required and missing confounds remain fatal.
 
 The legacy `makeSingleTrials_trust.py` entry point remains available but now
 delegates to the unified generator and requires the same explicit scope.

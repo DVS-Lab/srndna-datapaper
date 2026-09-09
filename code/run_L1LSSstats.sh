@@ -15,13 +15,15 @@ Options:
   --run RUN         include one run; repeatable (2 or run-02)
   --dataset-root P  OpenNeuro BIDS root containing sub-* and derivatives/
   --work-root P     external root for EVs and trial-wise FEAT intermediates
+  --available-runs  select only runs with a preprocessed BOLD image
+  --jobs N          run at most N FEAT models concurrently
   --refresh         replace outputs lacking a current input fingerprint
   --force           replace completed trial images in the selected scope
   --pack            pack completed trial images into public 4D derivatives
   --dry-run         validate and report the selected work without running FEAT
   -h, --help        show this help
 
-NCORES controls concurrent FEAT jobs (default: 30).
+NCORES remains a fallback for --jobs (default: 30).
 EOF
 }
 
@@ -46,10 +48,14 @@ force=0
 refresh=0
 pack=0
 dry_run=0
+available_runs=0
 dataset_root=
 work_root=
+jobs=
 subjects=()
 runs=()
+subject_count=0
+run_count=0
 while (( $# )); do
 	case "$1" in
 		--all-subjects)
@@ -59,11 +65,13 @@ while (( $# )); do
 		--subject)
 			(( $# >= 2 )) || { usage; exit 2; }
 			subjects+=("${2#sub-}")
+			((subject_count += 1))
 			shift 2
 			;;
 		--run)
 			(( $# >= 2 )) || { usage; exit 2; }
 			runs+=("${2#run-}")
+			((run_count += 1))
 			shift 2
 			;;
 		--dataset-root)
@@ -74,6 +82,15 @@ while (( $# )); do
 		--work-root)
 			(( $# >= 2 )) || { usage; exit 2; }
 			work_root=$2
+			shift 2
+			;;
+		--available-runs)
+			available_runs=1
+			shift
+			;;
+		--jobs)
+			(( $# >= 2 )) || { usage; exit 2; }
+			jobs=$2
 			shift 2
 			;;
 		--force)
@@ -104,11 +121,11 @@ while (( $# )); do
 	esac
 done
 
-if (( all_subjects && ${#subjects[@]} )); then
+if (( all_subjects && subject_count )); then
 	echo "choose --all-subjects or --subject, not both" >&2
 	exit 2
 fi
-if (( ! all_subjects && ${#subjects[@]} == 0 )); then
+if (( ! all_subjects && subject_count == 0 )); then
 	echo "an explicit scope is required: --all-subjects or --subject ID" >&2
 	exit 2
 fi
@@ -116,25 +133,29 @@ if (( force && refresh )); then
 	echo "choose --refresh or --force, not both" >&2
 	exit 2
 fi
-for sub in "${subjects[@]}"; do
-	if ! [[ "$sub" =~ ^[0-9]+$ ]]; then
-		echo "invalid subject: $sub" >&2
-		exit 2
-	fi
-done
-for run in "${runs[@]}"; do
-	if ! [[ "$run" =~ ^[0-9]+$ ]] || (( 10#$run < 1 )); then
-		echo "invalid run: $run" >&2
-		exit 2
-	fi
-done
-for index in "${!runs[@]}"; do
-	runs[$index]=$((10#${runs[$index]}))
-done
+if (( subject_count )); then
+	for sub in "${subjects[@]}"; do
+		if ! [[ "$sub" =~ ^[0-9]+$ ]]; then
+			echo "invalid subject: $sub" >&2
+			exit 2
+		fi
+	done
+fi
+if (( run_count )); then
+	for run in "${runs[@]}"; do
+		if ! [[ "$run" =~ ^[0-9]+$ ]] || (( 10#$run < 1 )); then
+			echo "invalid run: $run" >&2
+			exit 2
+		fi
+	done
+	for index in "${!runs[@]}"; do
+		runs[$index]=$((10#${runs[$index]}))
+	done
+fi
 
-NCORES=${NCORES:-30}
-if ! [[ "$NCORES" =~ ^[1-9][0-9]*$ ]]; then
-	echo "NCORES must be a positive integer" >&2
+jobs=${jobs:-${NCORES:-30}}
+if ! [[ "$jobs" =~ ^[1-9][0-9]*$ ]]; then
+	echo "--jobs (or NCORES) must be a positive integer" >&2
 	exit 2
 fi
 
@@ -189,6 +210,8 @@ done < <(
 selected_ev_files=()
 selected_current_flags=()
 selected_run_keys=()
+unavailable_run_keys=()
+unavailable_run_count=0
 existing=0
 current=0
 missing_inputs=0
@@ -205,7 +228,13 @@ for ev_file in "${all_ev_files[@]}"; do
 	if (( ! all_subjects )) && ! contains "$sub" "${subjects[@]}"; then
 		continue
 	fi
-	if (( ${#runs[@]} )) && ! contains "$run" "${runs[@]}"; then
+	if (( run_count )) && ! contains "$run" "${runs[@]}"; then
+		continue
+	fi
+	data="${dataset_root}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"
+	if (( available_runs )) && [[ ! -s "$data" ]]; then
+		unavailable_run_keys+=("${sub}:${run}")
+		((unavailable_run_count += 1))
 		continue
 	fi
 
@@ -219,8 +248,7 @@ for ev_file in "${all_ev_files[@]}"; do
 	trial_padded=$(printf '%02d' "$trial")
 	output="${work_root}/sub-${sub}/LSS-images_task-${TASK}_model-01_type-act_run-$(printf '%02d' "$run")/zstat_trial-${trial_padded}.nii.gz"
 	fingerprint_file="${output%.nii.gz}.lss-inputs.cksum"
-	data="${dataset_root}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"
-	confounds="${dataset_root}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
+	confounds="${work_root}/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
 	template="${basedir}/templates/L1LSS_task-${TASK}_model-01_type-act.fsf"
 	dependencies=("$ev_file" "$other_file" "$confounds" "$template" "${scriptdir}/L1LSSstats.sh")
 	if [[ "$TASK" == "trust" ]]; then
@@ -250,7 +278,7 @@ for key in "${run_keys[@]}"; do
 	sub=${key%%:*}
 	run=${key##*:}
 	data="${dataset_root}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"
-	confounds="${dataset_root}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
+	confounds="${work_root}/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
 	if [[ ! -s "$data" ]]; then
 		echo "missing preprocessed BOLD: $data" >&2
 		((missing_inputs += 1))
@@ -279,7 +307,12 @@ fi
 echo "Task: $TASK"
 echo "Dataset root: $dataset_root"
 echo "Work root: $work_root"
+echo "Concurrent FEAT jobs: $jobs"
 echo "Participant-runs: ${#run_keys[@]}"
+if (( unavailable_run_count )); then
+	skipped_run_count=$(printf '%s\n' "${unavailable_run_keys[@]}" | sort -u | wc -l | tr -d ' ')
+	echo "Skipped participant-runs without preprocessed BOLD: $skipped_run_count"
+fi
 echo "Selected trial models: $selected"
 echo "Completed trial images already present: $existing"
 echo "Trial images current with code and inputs: $current"
@@ -294,6 +327,7 @@ if (( dry_run )); then
 fi
 
 pids=()
+pid_count=0
 failures=0
 wait_batch() {
 	local pid
@@ -301,6 +335,7 @@ wait_batch() {
 		wait "$pid" || ((failures += 1))
 	done
 	pids=()
+	pid_count=0
 }
 
 scheduled=0
@@ -327,12 +362,13 @@ for index in "${!selected_ev_files[@]}"; do
 		SRNDNA_LSS_WORK_ROOT="$work_root" \
 		bash "${scriptdir}/L1LSSstats.sh" "${args[@]}" &
 	pids+=("$!")
+	((pid_count += 1))
 	((scheduled += 1))
-	if (( ${#pids[@]} >= NCORES )); then
+	if (( pid_count >= jobs )); then
 		wait_batch
 	fi
 done
-if (( ${#pids[@]} )); then
+if (( pid_count )); then
 	wait_batch
 fi
 if (( failures )); then
