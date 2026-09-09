@@ -165,6 +165,15 @@ class LssConfigurationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             work = root / "work"
+            bindir = root / "bin"
+            bindir.mkdir()
+            fake_nvols = bindir / "fslnvols"
+            fake_nvols.write_text(
+                "#!/usr/bin/env bash\necho 1\n", encoding="utf-8"
+            )
+            fake_nvols.chmod(0o755)
+            environment = os.environ.copy()
+            environment["PATH"] = f"{bindir}:{environment['PATH']}"
             evdir = (
                 work
                 / "EVfiles/sub-144/SingleTrialEVs"
@@ -219,11 +228,16 @@ class LssConfigurationTests(unittest.TestCase):
                 check=False,
                 capture_output=True,
                 text=True,
+                env=environment,
             )
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn("Selected trial models: 1", result.stdout)
             self.assertIn("Trial models to execute: 1", result.stdout)
             self.assertIn("Concurrent FEAT jobs: 44", result.stdout)
+            self.assertIn(
+                "Confound/BOLD row counts checked: 1",
+                result.stdout,
+            )
             self.assertIn(
                 "Skipped participant-runs without preprocessed BOLD: 1",
                 result.stdout,
@@ -276,6 +290,7 @@ class LssConfigurationTests(unittest.TestCase):
                 check=False,
                 capture_output=True,
                 text=True,
+                env=environment,
             )
             self.assertEqual(refreshed.returncode, 0, refreshed.stderr)
             self.assertIn("Trial images current with code and inputs: 1", refreshed.stdout)

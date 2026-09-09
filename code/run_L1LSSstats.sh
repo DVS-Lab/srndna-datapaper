@@ -215,6 +215,7 @@ unavailable_run_count=0
 existing=0
 current=0
 missing_inputs=0
+row_count_checks=0
 for ev_file in "${all_ev_files[@]}"; do
 	if [[ "$ev_file" =~ /sub-([0-9]+)/SingleTrialEVs/task-${TASK}/run([0-9]+)/trialmodel-([0-9]+)_estimage-single\.tsv$ ]]; then
 		sub=${BASH_REMATCH[1]}
@@ -287,6 +288,19 @@ for key in "${run_keys[@]}"; do
 		echo "missing FSL confounds: $confounds" >&2
 		((missing_inputs += 1))
 	fi
+	if [[ -s "$data" && -s "$confounds" ]] && command -v fslnvols >/dev/null 2>&1; then
+		if ! nvolumes=$(fslnvols "$data"); then
+			echo "could not read BOLD volume count: $data" >&2
+			((missing_inputs += 1))
+		else
+			confound_rows=$(wc -l < "$confounds")
+			if (( confound_rows != nvolumes )); then
+				echo "confound/BOLD row mismatch for sub-${sub} task-${TASK} run-${run}: ${confound_rows} != ${nvolumes}" >&2
+				((missing_inputs += 1))
+			fi
+			((row_count_checks += 1))
+		fi
+	fi
 	if [[ "$TASK" == "trust" ]]; then
 		decision="${ev_root}/sub-${sub}/SingleTrialEVs/task-trust/run$(printf '%02d' "$run")/trialmodel-decisionphase_.tsv"
 		if [[ ! -s "$decision" ]]; then
@@ -309,6 +323,11 @@ echo "Dataset root: $dataset_root"
 echo "Work root: $work_root"
 echo "Concurrent FEAT jobs: $jobs"
 echo "Participant-runs: ${#run_keys[@]}"
+if (( row_count_checks )); then
+	echo "Confound/BOLD row counts checked: $row_count_checks"
+else
+	echo "Confound/BOLD row counts not checked (fslnvols unavailable)"
+fi
 if (( unavailable_run_count )); then
 	skipped_run_count=$(printf '%s\n' "${unavailable_run_keys[@]}" | sort -u | wc -l | tr -d ' ')
 	echo "Skipped participant-runs without preprocessed BOLD: $skipped_run_count"
@@ -325,6 +344,13 @@ if (( dry_run )); then
 	echo "Dry run complete; no FEAT jobs or packing commands were run"
 	exit 0
 fi
+
+for command in feat fslnvols; do
+	if ! command -v "$command" >/dev/null 2>&1; then
+		echo "required FSL command not found: $command" >&2
+		exit 1
+	fi
+done
 
 pids=()
 pid_count=0
