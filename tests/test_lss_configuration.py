@@ -29,6 +29,31 @@ class LssConfigurationTests(unittest.TestCase):
             self.assertIsNotNone(match, template)
             self.assertEqual(float(match.group(1)), 0.0, template)
 
+    def test_trust_template_uses_fmriprep_preprocessing_and_cosine_filtering(self):
+        template = (
+            REPO_ROOT / "templates" / "L1LSS_task-trust_model-01_type-act.fsf"
+        )
+        contents = template.read_text(encoding="utf-8")
+
+        expected_settings = {
+            "mc": "0",
+            "smooth": "0.0",
+            "temphp_yn": "0",
+            "motionevs": "0",
+            "confoundevs": "1",
+            "tempfilt_yn1": "0",
+            "tempfilt_yn2": "0",
+            "tempfilt_yn3": "0",
+        }
+        for setting, expected in expected_settings.items():
+            match = re.search(
+                rf"^set fmri\({re.escape(setting)}\) (\S+)$",
+                contents,
+                flags=re.MULTILINE,
+            )
+            self.assertIsNotNone(match, f"Missing fmri({setting}) in {template}")
+            self.assertEqual(match.group(1), expected, f"fmri({setting}) in {template}")
+
     def test_trust_ev_generation_uses_observed_outcome_count(self):
         event_file = (
             REPO_ROOT
