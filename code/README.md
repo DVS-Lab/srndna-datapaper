@@ -23,21 +23,56 @@ acquisition log. It updates the BIDS file and both tracked legacy mirrors. Run
 `python3 code/recover_sub144_ultimatum_events.py --check` to verify that the
 tracked files remain reproducible from the raw logs.
 
-## Trust single-trial models
+## Single-trial LSS models
 
-The Trust LSS template uses no additional spatial smoothing, consistent with
-the other task-specific LSS templates. To rebuild the Trust single-trial EVs
-and force regeneration of the LSS images on a Linux system with FSL and the
-untracked imaging derivatives available:
+`makeSingleTrials.py` generates EV files for Trust, Ultimatum, and
+SharedReward. `run_L1LSSstats.sh` requires an explicit participant scope,
+supports participant/run subsets, performs a dry-run preflight, and can pack
+the trial-wise z-statistics into the public 4D files under
+`derivatives/single_trials`.
+
+The analysis code and downloaded OpenNeuro dataset may live in separate
+directories. Pass the OpenNeuro BIDS root (the directory containing `sub-*`
+and `derivatives/`) with `--dataset-root`; templates are always read from this
+GitHub repository.
+
+Always preview a scope before running FEAT:
 
 ```bash
-python3 code/makeSingleTrials_trust.py --clean
-NCORES=30 bash code/run_L1LSSstats.sh trust --force
+python3 code/makeSingleTrials.py trust \
+  --dataset-root /path/to/openneuro-dataset --all-subjects --clean --dry-run
+
+bash code/run_L1LSSstats.sh trust \
+  --dataset-root /path/to/openneuro-dataset --all-subjects --refresh --pack --dry-run
 ```
 
-Set `SUBJECTS="104 105"` before the second command to limit a test run. The
-runner writes each completed z-statistic through a temporary file before
-replacing the prior image.
+Remove `--dry-run` from the EV command first, then from the FEAT command. The
+Trust correction should use `--refresh`: it reruns outputs without a matching
+content fingerprint for the current template, analysis script, EVs, and
+confounds. BOLD inputs are checked for presence without repeatedly hashing the
+large images. This remains restartable after interruption because every
+successfully corrected trial receives a matching fingerprint. `--force`
+instead reruns every trial in the selected scope.
+
+For a repaired subset, repeat `--subject` and `--run` as needed:
+
+```bash
+python3 code/makeSingleTrials.py ultimatum \
+  --dataset-root /path/to/openneuro-dataset \
+  --subject 144 --run 1 --run 2 --clean --dry-run
+
+bash code/run_L1LSSstats.sh ultimatum \
+  --dataset-root /path/to/openneuro-dataset \
+  --subject 144 --run 1 --run 2 --refresh --pack --dry-run
+```
+
+Set `NCORES` for FEAT concurrency, for example `NCORES=20`. Packing happens
+only after every selected FEAT job succeeds. It uses the generated EV files as
+the trial manifest, checks that every expected z-statistic exists, verifies the
+packed volume count, and atomically replaces the corresponding public 4D file.
+
+The legacy `makeSingleTrials_trust.py` entry point remains available but now
+delegates to the unified generator and requires the same explicit scope.
 
 
 

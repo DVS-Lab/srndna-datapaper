@@ -1,195 +1,127 @@
 #!/usr/bin/env bash
 
+# Run one activation-only least-squares-separate (LSS) model in FSL FEAT.
 set -euo pipefail
 
-# This script will perform Level 1 statistics in FSL.
-# Rather than having multiple scripts, we are merging three analyses
-# into this one script:
-#		1) activation
-#		2) seed-based ppi
-#		3) network-based ppi
-# Note that activation analysis must be performed first.
-# Seed-based PPI and Network PPI should follow activation analyses.
+usage() {
+	echo "usage: $0 SUBJECT RUN TRIAL [TASK] [--force]" >&2
+}
 
-# ensure paths are correct irrespective from where user runs the script
-scriptdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-maindir="$(dirname "$scriptdir")"
-logs=$maindir/logs
-mkdir -p "$logs"
-
-# study-specific input
-sub=${1:?usage: L1LSSstats.sh SUBJECT RUN TRIAL [TASK] [--force]}
-run=${2:?usage: L1LSSstats.sh SUBJECT RUN TRIAL [TASK] [--force]}
-ppi=0 # 0 for activation, otherwise seed region or network
-trial=${3:?usage: L1LSSstats.sh SUBJECT RUN TRIAL [TASK] [--force]}
+if (( $# < 3 || $# > 5 )); then
+	usage
+	exit 2
+fi
+sub=${1#sub-}
+run=${2#run-}
+trial=$3
 TASK=${4:-ultimatum}
 force=${5:-}
-trialpadded=$(printf '%02d' "$trial")
 
 case "$TASK" in
 	ultimatum|trust|sharedreward) ;;
 	*) echo "unsupported task: $TASK" >&2; exit 2 ;;
 esac
 if [[ -n "$force" && "$force" != "--force" ]]; then
-	echo "fifth argument must be --force" >&2
+	usage
 	exit 2
 fi
+if ! [[ "$sub" =~ ^[0-9]+$ && "$run" =~ ^[0-9]+$ && "$trial" =~ ^[0-9]+$ ]] \
+	|| (( 10#$run < 1 || 10#$trial < 1 )); then
+	echo "subject must be numeric; run and trial must be positive integers" >&2
+	exit 2
+fi
+run=$((10#$run))
+trial=$((10#$trial))
+run_padded=$(printf '%02d' "$run")
+trial_padded=$(printf '%02d' "$trial")
 
-# set inputs and general outputs (should not need to chage across studies in Smith Lab)
-MAINOUTPUT=${maindir}/derivatives/fsl/sub-${sub}
-mkdir -p $MAINOUTPUT
-DATA=${maindir}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz
-NVOLUMES=`fslnvols ${DATA}`
-CONFOUNDEVS=${maindir}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv
-if [ ! -e $CONFOUNDEVS ]; then
-	echo "missing: $CONFOUNDEVS " >> ${logs}/L1_missing-confounds.log
-	exit 1 # exiting to ensure nothing gets run without confounds
+for command in feat fslnvols; do
+	if ! command -v "$command" >/dev/null 2>&1; then
+		echo "required FSL command not found: $command" >&2
+		exit 1
+	fi
+done
+
+scriptdir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+repo_root="$(dirname "$scriptdir")"
+dataset_root=${SRNDNA_DATASET_ROOT:-$repo_root}
+logs="${dataset_root}/logs"
+main_output="${dataset_root}/derivatives/fsl/sub-${sub}"
+mkdir -p "$logs" "$main_output"
+
+data="${dataset_root}/derivatives/fmriprep/sub-${sub}/func/sub-${sub}_task-${TASK}_run-${run}_space-MNI152NLin2009cAsym_desc-preproc_bold.nii.gz"
+confounds="${dataset_root}/derivatives/fsl/confounds/sub-${sub}/sub-${sub}_task-${TASK}_run-${run}_desc-fslConfounds.tsv"
+evdir="${dataset_root}/derivatives/fsl/EVfiles/sub-${sub}/SingleTrialEVs/task-${TASK}/run${run_padded}"
+single_trial="${evdir}/trialmodel-${trial}_estimage-single.tsv"
+other_trials="${evdir}/trialmodel-${trial}_estimage-other.tsv"
+decision_phase="${evdir}/trialmodel-decisionphase_.tsv"
+template="${repo_root}/templates/L1LSS_task-${TASK}_model-01_type-act.fsf"
+
+for required_file in "$data" "$confounds" "$single_trial" "$other_trials" "$template"; do
+	if [[ ! -s "$required_file" ]]; then
+		echo "missing required LSS input: $required_file" >&2
+		exit 1
+	fi
+done
+if [[ "$TASK" == "trust" && ! -s "$decision_phase" ]]; then
+	echo "missing Trust decision-phase EV: $decision_phase" >&2
+	exit 1
 fi
 
-# EV files
-EVDIR=${maindir}/derivatives/fsl/EVfiles/sub-${sub}/SingleTrialEVs/task-${TASK}/run0${run}
-SINGLETRIAL=${EVDIR}/trialmodel-${trial}_estimage-single.tsv
-OTHERTRIAL=${EVDIR}/trialmodel-${trial}_estimage-other.tsv
-DECISIONPHASE=${EVDIR}/trialmodel-decisionphase_.tsv
-
-# create common directory for zstat outputs
-zoutdir=${MAINOUTPUT}/LSS-images_task-${TASK}_model-01_type-act_run-0${run}
-if [ ! -d $zoutdir ]; then
-	mkdir -p $zoutdir
+nvolumes=$(fslnvols "$data")
+confound_rows=$(wc -l < "$confounds")
+if (( confound_rows != nvolumes )); then
+	echo "confound/BOLD row mismatch for sub-${sub} task-${TASK} run-${run}: ${confound_rows} != ${nvolumes}" >&2
+	exit 1
 fi
 
-# if network (ecn or dmn), do nppi; otherwise, do activation or seed-based ppi
-if [ "$ppi" == "ecn" -o "$ppi" == "dmn" -o "$ppi" == "rfpn" -o "$ppi" == "lfpn" ]; then
+output="${main_output}/L1LSS_task-${TASK}_model-01_type-act_run-${run_padded}_trial-${trial_padded}"
+rendered_template="${main_output}/L1LSS_sub-${sub}_task-${TASK}_model-01_type-act_run-${run_padded}_trial-${trial_padded}.fsf"
+trial_output_dir="${main_output}/LSS-images_task-${TASK}_model-01_type-act_run-${run_padded}"
+trial_output="${trial_output_dir}/zstat_trial-${trial_padded}.nii.gz"
+temporary_output="${trial_output}.tmp"
+fingerprint_file="${trial_output%.nii.gz}.lss-inputs.cksum"
+temporary_fingerprint="${fingerprint_file}.tmp"
+mkdir -p "$trial_output_dir"
 
-	# check for output and skip existing
-	#OUTPUT=${MAINOUTPUT}/L1_task-${TASK}_model-02_type-nppi-${ppi}_run-0${run}_sm-${sm}_trial-${trial}
-	#if [ -e ${zoutdir}/zstat_trial-${trial}.nii.gz ]; then
-	#	exit
-	#else
-	#	echo "running: $OUTPUT " >> $logfile
-	#	rm -rf ${OUTPUT}.feat
-	#fi
-
-	# network extraction. need to ensure you have run Level 1 activation
-	MASK=${MAINOUTPUT}/L1_task-${TASK}_model-01_type-act_run-0${run}_sm-${sm}.feat/mask
-	if [ ! -e ${MASK}.nii.gz ]; then
-		echo "cannot run nPPI because you're missing $MASK"
-		exit
-	fi
-	for net in `seq 0 9`; do
-		NET=${maindir}/masks/nets/rPNAS_2mm_net000${net}.nii
-		TSFILE=${MAINOUTPUT}/ts_task-${TASK}_net000${net}_nppi-${ppi}_run-0${run}.txt
-		fsl_glm -i $DATA -d $NET -o $TSFILE --demean -m $MASK
-		eval INPUT${net}=$TSFILE
-	done
-
-	# set names for network ppi
-	if [ "$ppi" == "dmn" ]; then
-		DMN=$INPUT3
-		ECN=$INPUT7
-		MAINNET=$DMN
-		OTHERNET=$ECN
-		ITEMPLATE=${maindir}/templates/L1_template-m02_netppi.fsf
-	elif [ "$ppi" == "ecn" ]; then
-		DMN=$INPUT3
-		ECN=$INPUT7
-		MAINNET=$ECN
-		OTHERNET=$DMN
-		ITEMPLATE=${maindir}/templates/L1_template-m02_netppi.fsf
-	elif [ "$ppi" == "rfpn" ]; then
-		RFPN=$INPUT8
-		LFPN=$INPUT9
-		MAINNET=$RFPN
-		OTHERNET=$LFPN
-		ITEMPLATE=${maindir}/templates/L1_template-m02_netppi_FPN.fsf
-	elif [ "$ppi" == "lfpn" ]; then
-		RFPN=$INPUT8
-		LFPN=$INPUT9
-		MAINNET=$LFPN
-		OTHERNET=$RFPN
-		ITEMPLATE=${maindir}/templates/L1_template-m02_netppi_FPN.fsf
-	fi
-
-	# create template and run analyses
-	OTEMPLATE=${MAINOUTPUT}/L1_task-${TASK}_model-02_seed-${ppi}_run-0${run}_trial-${trial}.fsf
-	sed -e 's@OUTPUT@'$OUTPUT'@g' \
-	-e 's@NVOLUMES@'$NVOLUMES'@g' \
-	-e 's@DATA@'$DATA'@g' \
-	-e 's@SINGLETRIAL@'$SINGLETRIAL'@g' \
-	-e 's@OTHERTRIAL@'$OTHERTRIAL'@g' \
-	-e 's@CONFOUNDEVS@'$CONFOUNDEVS'@g' \
-	-e 's@MAINNET@'$MAINNET'@g' \
-	-e 's@OTHERNET@'$OTHERNET'@g' \
-	-e 's@INPUT0@'$INPUT0'@g' \
-	-e 's@INPUT1@'$INPUT1'@g' \
-	-e 's@INPUT2@'$INPUT2'@g' \
-	-e 's@INPUT3@'$INPUT3'@g' \
-	-e 's@INPUT4@'$INPUT4'@g' \
-	-e 's@INPUT5@'$INPUT5'@g' \
-	-e 's@INPUT6@'$INPUT6'@g' \
-	-e 's@INPUT7@'$INPUT7'@g' \
-	-e 's@INPUT8@'$INPUT8'@g' \
-	-e 's@INPUT9@'$INPUT9'@g' \
-	<$ITEMPLATE> $OTEMPLATE
-	feat $OTEMPLATE
-
-else # otherwise, do activation and seed-based ppi
-
-	# set output based in whether it is activation or ppi
-	if [ "$ppi" == "0" ]; then
-		TYPE=act
-		OUTPUT=${MAINOUTPUT}/L1LSS_task-${TASK}_model-01_type-${TYPE}_run-0${run}_trial-${trialpadded}
-	else
-		TYPE=ppi
-		OUTPUT=${MAINOUTPUT}/L1_task-${TASK}_model-02_type-${TYPE}_seed-${ppi}_run-0${run}_sm-${sm}_trial-${trial}
-	fi
-
-	# check for output and skip existing
-	if [ -e ${zoutdir}/zstat_trial-${trialpadded}.nii.gz ] && [ "$force" != "--force" ]; then
-		exit
-	else
-		echo "running: $OUTPUT " >> ${logs}/re-runL1LSS.log
-		rm -rf ${OUTPUT}.feat
-	fi
-
-	# create template and run analyses
-	ITEMPLATE=${maindir}/templates/L1LSS_task-${TASK}_model-01_type-${TYPE}.fsf
-	OTEMPLATE=${MAINOUTPUT}/L1LSS_sub-${sub}_task-${TASK}_model-01_type-${TYPE}_run-0${run}_trial-${trialpadded}.fsf
-	if [ "$ppi" == "0" ] && [ "$TASK" == "trust" ]; then
-		sed -e 's@OUTPUT@'$OUTPUT'@g' \
-		-e 's@DATA@'$DATA'@g' \
-		-e 's@SINGLETRIAL@'$SINGLETRIAL'@g' \
-		-e 's@OTHERTRIAL@'$OTHERTRIAL'@g' \
-		-e 's@DECISIONPHASE@'$DECISIONPHASE'@g' \
-		-e 's@CONFOUNDEVS@'$CONFOUNDEVS'@g' \
-		-e 's@NVOLUMES@'$NVOLUMES'@g' \
-		<$ITEMPLATE> $OTEMPLATE
-	elif [ "$ppi" == "0" ]; then
-		sed -e 's@OUTPUT@'$OUTPUT'@g' \
-		-e 's@DATA@'$DATA'@g' \
-		-e 's@SINGLETRIAL@'$SINGLETRIAL'@g' \
-		-e 's@OTHERTRIAL@'$OTHERTRIAL'@g' \
-		-e 's@CONFOUNDEVS@'$CONFOUNDEVS'@g' \
-		-e 's@NVOLUMES@'$NVOLUMES'@g' \
-		<$ITEMPLATE> $OTEMPLATE
-	else
-		PHYS=${MAINOUTPUT}/ts_task-${TASK}_mask-${ppi}_run-0${run}.txt
-		MASK=${maindir}/masks/seed-${ppi}.nii.gz
-		fslmeants -i $DATA -o $PHYS -m $MASK --eig
-		sed -e 's@OUTPUT@'$OUTPUT'@g' \
-		-e 's@DATA@'$DATA'@g' \
-		-e 's@SINGLETRIAL@'$SINGLETRIAL'@g' \
-		-e 's@OTHERTRIAL@'$OTHERTRIAL'@g' \
-		-e 's@PHYS@'$PHYS'@g' \
-		-e 's@CONFOUNDEVS@'$CONFOUNDEVS'@g' \
-		-e 's@NVOLUMES@'$NVOLUMES'@g' \
-		<$ITEMPLATE> $OTEMPLATE
-	fi
-	feat $OTEMPLATE
+if [[ -s "$trial_output" && "$force" != "--force" ]]; then
+	exit 0
 fi
+echo "running: $output" >> "${logs}/re-runL1LSS.log"
+rm -rf -- "${output}.feat"
 
+sed_args=(
+	-e "s@OUTPUT@${output}@g"
+	-e "s@DATA@${data}@g"
+	-e "s@SINGLETRIAL@${single_trial}@g"
+	-e "s@OTHERTRIAL@${other_trials}@g"
+	-e "s@CONFOUNDEVS@${confounds}@g"
+	-e "s@NVOLUMES@${nvolumes}@g"
+)
+if [[ "$TASK" == "trust" ]]; then
+	sed_args+=( -e "s@DECISIONPHASE@${decision_phase}@g" )
+fi
+sed "${sed_args[@]}" "$template" > "$rendered_template"
+feat "$rendered_template"
 
-# Copy only a successfully generated image, then delete the temporary FEAT output.
-cp ${OUTPUT}.feat/stats/zstat1.nii.gz ${zoutdir}/zstat_trial-${trialpadded}.nii.gz.tmp
-mv ${zoutdir}/zstat_trial-${trialpadded}.nii.gz.tmp ${zoutdir}/zstat_trial-${trialpadded}.nii.gz
-rm -rf ${OUTPUT}.feat
+zstat="${output}.feat/stats/zstat1.nii.gz"
+if [[ ! -s "$zstat" ]]; then
+	echo "FEAT completed without the expected zstat1: ${output}.feat" >&2
+	exit 1
+fi
+cp "$zstat" "$temporary_output"
+mv "$temporary_output" "$trial_output"
+fingerprint_inputs=(
+	"$single_trial"
+	"$other_trials"
+	"$confounds"
+	"$template"
+	"${scriptdir}/L1LSSstats.sh"
+)
+if [[ "$TASK" == "trust" ]]; then
+	fingerprint_inputs+=("$decision_phase")
+fi
+bash "${scriptdir}/lss_input_fingerprint.sh" "${fingerprint_inputs[@]}" \
+	> "$temporary_fingerprint"
+mv "$temporary_fingerprint" "$fingerprint_file"
+rm -rf -- "${output}.feat"
