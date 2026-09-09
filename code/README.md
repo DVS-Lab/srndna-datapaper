@@ -17,11 +17,31 @@ Some files cannot be shared publicly. And some raw source data are in non-standa
 
 ## Data corrections
 
-`recover_sub144_ultimatum_events.py` reconstructs the two sub-144 Ultimatum
-events files from the second complete session stored in each concatenated raw
-acquisition log. It updates the BIDS file and both tracked legacy mirrors. Run
-`python3 code/recover_sub144_ultimatum_events.py --check` to verify that the
-tracked files remain reproducible from the raw logs.
+`recover_sub144_ultimatum_events.py` and
+`recover_sub144_sharedreward_events.py` reconstruct the sub-144 event files
+from the second complete session stored in each concatenated raw acquisition
+log. In both tasks the first session reproduces the separately recovered
+sub-143 files, while the second contains sub-144's distinct responses and
+timing. Run both scripts with `--check` to verify that the tracked files remain
+reproducible from the raw logs.
+
+To apply these verified files to a separately downloaded OpenNeuro dataset,
+first preview the guarded deployment and then explicitly apply it with a
+backup directory outside the dataset:
+
+```bash
+python3 code/apply_openneuro_event_repairs.py \
+  --dataset-root /path/to/openneuro-dataset
+
+python3 code/apply_openneuro_event_repairs.py \
+  --dataset-root /path/to/openneuro-dataset \
+  --backup-root /path/to/external-backup --apply
+```
+
+The deployment refuses unexpected destination hashes, keeps the published
+files in the backup directory, uses atomic replacement, and writes a SHA-256
+manifest. It updates optional legacy Ultimatum mirrors only when those files
+are present in the downloaded dataset.
 
 ## Single-trial LSS models
 

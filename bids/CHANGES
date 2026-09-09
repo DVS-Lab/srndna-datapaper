@@ -8,3 +8,6 @@ Corrections after 0.0.1:
 	- Reconstructed the sub-144 Ultimatum events files from the second complete
 	  session in each concatenated acquisition log. The first logged session is
 	  the separately recovered sub-143 session.
+	- Reconstructed the sub-144 Shared Reward events files from the same
+	  two-session log structure; the first session reproduces sub-143 and the
+	  second session contains sub-144's distinct timing and responses.
