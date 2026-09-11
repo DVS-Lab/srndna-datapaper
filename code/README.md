@@ -120,6 +120,24 @@ all other selected inputs are still required and missing confounds remain fatal.
 The legacy `makeSingleTrials_trust.py` entry point remains available but now
 delegates to the unified generator and requires the same explicit scope.
 
+## Partner-ratings audit
+
+`audit_task_ratings.py` inventories the raw PsychoPy Bargaining, Investment,
+and Shared Reward rating files, splits repeated acquisition blocks without
+discarding any responses, validates task-specific partner and rating cells,
+and reports coverage against `bids/participants.tsv`:
+
+```bash
+python3 code/audit_task_ratings.py
+```
+
+The four small TSV outputs in `results/ratings_audit` retain source paths and
+SHA-256 hashes, normalized item-level responses, expected measurement coverage,
+and every acquisition that still requires review. The audit intentionally does
+not write into the BIDS tree. These task-linked, untimed item responses are
+intended for subject-level `beh/*_beh.tsv` files after acquisition ambiguities
+are resolved; they are not treated as participant-level phenotype summaries.
+
 
 
 
