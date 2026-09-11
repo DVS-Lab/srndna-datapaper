@@ -74,6 +74,36 @@ class ApplyOpenNeuroEventRepairsTests(unittest.TestCase):
             finally:
                 MODULE.REPAIRS = original_repairs
 
+    def test_apply_accepts_a_previous_corrected_version(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            dataset = root / "dataset"
+            dataset.mkdir()
+            (dataset / "dataset_description.json").write_text("{}\n")
+            previous = b"previous corrected version\n"
+            repair = replace(
+                MODULE.REPAIRS[0],
+                accepted_previous_sha256=(hashlib.sha256(previous).hexdigest(),),
+            )
+            target = dataset / repair.destination
+            target.parent.mkdir(parents=True)
+            target.write_bytes(previous)
+
+            backup = root / "backup"
+            original_repairs = MODULE.REPAIRS
+            MODULE.REPAIRS = (repair,)
+            try:
+                self.assertEqual(MODULE.run(REPO_ROOT, dataset, backup, True), 0)
+                self.assertEqual(
+                    MODULE.sha256(target), MODULE.sha256(REPO_ROOT / repair.source)
+                )
+                self.assertEqual(
+                    MODULE.sha256(backup / "originals" / repair.destination),
+                    hashlib.sha256(previous).hexdigest(),
+                )
+            finally:
+                MODULE.REPAIRS = original_repairs
+
 
 if __name__ == "__main__":
     unittest.main()

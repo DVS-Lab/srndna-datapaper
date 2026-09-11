@@ -20,6 +20,7 @@ class Repair:
     destination: str
     published_sha256: str
     required: bool = True
+    accepted_previous_sha256: tuple[str, ...] = ()
 
 
 REPAIRS = (
@@ -71,6 +72,9 @@ REPAIRS = (
         "bids/CHANGES",
         "CHANGES",
         "ff86e33b0f82a4d4e5ed7c48d60ffb41b13e9c8e109f025f8d1684dce292b3e5",
+        accepted_previous_sha256=(
+            "e5ce7ce76906a244b1fbab2b0bcb25d6e749ed2d80a1dd80c8e1184b671d9140",
+        ),
     ),
 )
 
@@ -140,13 +144,23 @@ def run(repo_root: Path, dataset_root: Path, backup_root: Path | None, apply: bo
         before_hash = sha256(destination)
         if before_hash == corrected_hash:
             action = "already-current"
-        elif before_hash == repair.published_sha256:
+        elif before_hash in {
+            repair.published_sha256,
+            *repair.accepted_previous_sha256,
+        }:
             action = "replace"
         else:
+            accepted_hashes = "\n".join(
+                f"  accepted prior: {candidate}"
+                for candidate in (
+                    repair.published_sha256,
+                    *repair.accepted_previous_sha256,
+                )
+            )
             print(
                 f"ERROR unexpected destination hash: {repair.destination}\n"
                 f"  observed:  {before_hash}\n"
-                f"  published: {repair.published_sha256}\n"
+                f"{accepted_hashes}\n"
                 f"  corrected: {corrected_hash}",
                 file=sys.stderr,
             )

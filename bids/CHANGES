@@ -1,6 +1,10 @@
 2.1.2 2026-09-09
   - correct sub-144 Ultimatum and Shared Reward event files from the second
     complete session preserved in each concatenated acquisition log
+  - regenerate all available Trust LSS single-trial activation estimates from
+    fMRIPrep outputs without additional model-level spatial smoothing
+  - regenerate sub-144 Ultimatum and Shared Reward LSS single-trial activation
+    estimates from the corrected event files
 2.1.1 2024-01-07
   - add stimuli and code subfolders to dataset and update .bidsignore
 2.1.0 2024-01-03
