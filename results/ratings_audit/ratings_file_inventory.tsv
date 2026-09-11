@@ -6,7 +6,7 @@ sub-103	false	stimuli/psychopy/logs/103/sub103_SR-Ratings-2.csv	SR	2	sharedrewar
 sub-104	true	stimuli/psychopy/logs/104/sub104_Bargaining-Ratings-1.csv	Bargaining	1	ultimatum	pre	57d795a1eb8a8d2cee2e6cff4e673e907620eee17e6ea9bf6f76fd6be56151c6	151	1	6	1	n/a	complete	n/a
 sub-104	true	stimuli/psychopy/logs/104/sub104_Bargaining-Ratings-2.csv	Bargaining	2	ultimatum	post	80f49026a092f413d0382a93e9dd456772fa98c2e784ba8e84dcb6a9fb6ec4ba	264	1	12	1	n/a	complete	n/a
 sub-104	true	stimuli/psychopy/logs/104/sub104_Investment-Ratings-1.csv	Investment	1	trust	pre	de27982a92f2f0eb69da83d8ccf8dc27681f20a3c3b453db56101951e51d5863	208	1	9	2	stimuli/psychopy/logs/147/sub147_Investment-Ratings-1.csv	complete	n/a
-sub-104	true	stimuli/psychopy/logs/104/sub104_SR-Ratings-1.csv	SR	1	sharedreward	unresolved	7a000ad3ff79bf38307208442731f1555830fdb24897dcd3546051d94064933a	151	1	6	1	n/a	review	protocol_status_unresolved_for_session:1
+sub-104	true	stimuli/psychopy/logs/104/sub104_SR-Ratings-1.csv	SR	1	sharedreward	post	7a000ad3ff79bf38307208442731f1555830fdb24897dcd3546051d94064933a	151	1	6	1	n/a	review	superseded_sharedreward_first_set
 sub-104	true	stimuli/psychopy/logs/104/sub104_SR-Ratings-2.csv	SR	2	sharedreward	post	3495345d4e016f9dd2879fe0da8da888dc235db84410479d56f8f093a0c9e605	152	1	6	1	n/a	complete	n/a
 sub-105	true	stimuli/psychopy/logs/105/sub105_Bargaining-Ratings-2.csv	Bargaining	2	ultimatum	post	b48ee18f9c5f112055112a7d78cb6c8d7f4ad48402d30869d69847422307115e	528	2	12;12	1	n/a	review	multiple_acquisition_blocks:2
 sub-105	true	stimuli/psychopy/logs/105/sub105_Investment-Ratings-1.csv	Investment	1	trust	pre	fafbecbd43f930092a8ffe50c97f80e2e87d75850635a8a1a3ee161db7f4993f	208	1	9	1	n/a	complete	n/a

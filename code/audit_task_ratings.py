@@ -74,10 +74,11 @@ SPECS = {
         task="sharedreward",
         partner_levels={1: "computer", 2: "stranger", 3: "friend"},
         dimension_levels={0: "win", 1: "loss"},
-        # The source tree lacks the Shared Reward ratings script. Session 2 is
-        # treated as post-task because it is the only protocol-wide acquisition;
-        # the single session-1 file remains unresolved rather than being dropped.
-        sessions={"1": "unresolved", "2": "post"},
+        # The historical SR_postRatings.py generator identifies the entered
+        # session as Pre/Post, but only session 2 was used protocol-wide. When a
+        # second SR set exists, the study decision rule retains it and excludes
+        # the first set.
+        sessions={"1": "post", "2": "post"},
         expected_sessions=("2",),
         scale_min=-5,
         scale_max=5,
@@ -266,6 +267,15 @@ def audit(
     candidates = sorted(
         path for path in ratings_root.rglob("*Ratings*.csv") if path.is_file()
     )
+    recognized_candidate_keys = {
+        (
+            match.group("subject"),
+            match.group("family"),
+            match.group("session"),
+        )
+        for path in candidates
+        if (match := FILENAME.match(path.name))
+    }
     parsed_file_rows: list[dict[str, object]] = []
     for path in candidates:
         match = FILENAME.match(path.name)
@@ -304,7 +314,13 @@ def audit(
         if session not in spec.sessions:
             problems.append(f"unexpected_source_session:{session or 'blank'}")
         elif session not in spec.expected_sessions:
-            problems.append(f"protocol_status_unresolved_for_session:{session}")
+            if family == "SR" and session == "1":
+                if (subject, family, "2") in recognized_candidate_keys:
+                    problems.append("superseded_sharedreward_first_set")
+                else:
+                    problems.append("sharedreward_first_set_without_second_set")
+            else:
+                problems.append(f"protocol_status_unresolved_for_session:{session}")
         try:
             blocks = split_blocks(path)
         except ValueError as error:
@@ -349,6 +365,15 @@ def audit(
                 changed = sum(difference != 0 for difference in differences)
                 maximum = f"{max(differences, default=0):g}"
             exact_duplicate = changed == 0
+            if family == "SR":
+                resolution = "retain_last_block"
+                review_reason = "sharedreward_second_set_decision_rule"
+            elif exact_duplicate:
+                resolution = "collapse_exact_duplicate"
+                review_reason = "exact_duplicate_acquisition_block"
+            else:
+                resolution = "unresolved"
+                review_reason = "multiple_complete_acquisitions_in_one_source_file"
             repeat_review.append(
                 {
                     "participant_id": f"sub-{subject}",
@@ -359,29 +384,32 @@ def audit(
                     "n_blocks": len(blocks),
                     "changed_cells_between_blocks": changed,
                     "maximum_absolute_change": maximum,
-                    "resolution": (
-                        "collapse_exact_duplicate" if exact_duplicate else "unresolved"
-                    ),
-                    "review_reason": (
-                        "exact_duplicate_acquisition_block"
-                        if exact_duplicate
-                        else "multiple_complete_acquisitions_in_one_source_file"
-                    ),
+                    "resolution": resolution,
+                    "review_reason": review_reason,
                 }
             )
         if family == "SR" and session == "1":
+            has_second_set = (subject, family, "2") in recognized_candidate_keys
             repeat_review.append(
                 {
                     "participant_id": f"sub-{subject}",
                     "task": spec.task,
-                    "timepoint": "unresolved",
+                    "timepoint": "post",
                     "source_file": relative(path),
                     "n_complete_blocks": sum(not issues for issues in block_problems),
                     "n_blocks": len(blocks),
                     "changed_cells_between_blocks": "n/a",
                     "maximum_absolute_change": "n/a",
-                    "resolution": "unresolved",
-                    "review_reason": "only_sharedreward_session_1_file;source_script_missing",
+                    "resolution": (
+                        "exclude_superseded_first_set"
+                        if has_second_set
+                        else "unresolved"
+                    ),
+                    "review_reason": (
+                        "sharedreward_second_set_decision_rule"
+                        if has_second_set
+                        else "sharedreward_first_set_without_second_set"
+                    ),
                 }
             )
         row = {
@@ -431,7 +459,11 @@ def audit(
                 elif len(matched) > 1:
                     status = "multiple_files"
                 elif n_blocks > 1:
-                    status = "multiple_blocks_needs_review"
+                    status = (
+                        "resolved_last_block"
+                        if spec.task == "sharedreward"
+                        else "multiple_blocks_needs_review"
+                    )
                 elif matched[0]["status"] == "complete":
                     status = "complete"
                 else:
@@ -541,7 +573,9 @@ def main(argv: Sequence[str] | None = None) -> int:
     print(f"Normalized rating rows: {len(normalized)}")
     print(f"Expected participant/task/timepoint cells missing: {missing}")
     print(f"Expected cells with multiple acquisition blocks: {repeated}")
-    print(f"Items requiring acquisition review: {len(repeat_review)}")
+    unresolved = sum(row["resolution"] == "unresolved" for row in repeat_review)
+    print(f"Acquisition resolution records: {len(repeat_review)}")
+    print(f"Unresolved acquisition items: {unresolved}")
     print(f"Audit tables: {args.output_root.resolve()}")
     return 0
 

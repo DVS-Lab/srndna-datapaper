@@ -1,6 +1,6 @@
 participant_id	task	timepoint	source_file	n_complete_blocks	n_blocks	changed_cells_between_blocks	maximum_absolute_change	resolution	review_reason
 sub-103	trust	pre	stimuli/psychopy/logs/103/sub103_Investment-Ratings-1.csv	2	2	3	1	unresolved	multiple_complete_acquisitions_in_one_source_file
-sub-104	sharedreward	unresolved	stimuli/psychopy/logs/104/sub104_SR-Ratings-1.csv	1	1	n/a	n/a	unresolved	only_sharedreward_session_1_file;source_script_missing
+sub-104	sharedreward	post	stimuli/psychopy/logs/104/sub104_SR-Ratings-1.csv	1	1	n/a	n/a	exclude_superseded_first_set	sharedreward_second_set_decision_rule
 sub-105	ultimatum	post	stimuli/psychopy/logs/105/sub105_Bargaining-Ratings-2.csv	2	2	1	1	unresolved	multiple_complete_acquisitions_in_one_source_file
 sub-124	trust	post	stimuli/psychopy/logs/124/sub124_Investment-Ratings-2.csv	2	2	1	2	unresolved	multiple_complete_acquisitions_in_one_source_file
 sub-130	trust	pre	stimuli/psychopy/logs/130/sub130_Investment-Ratings-1.csv	2	2	6	4	unresolved	multiple_complete_acquisitions_in_one_source_file
@@ -10,7 +10,7 @@ sub-144	ultimatum	pre	stimuli/psychopy/logs/144/sub144_Bargaining-Ratings-1.csv	
 sub-144	ultimatum	post	stimuli/psychopy/logs/144/sub144_Bargaining-Ratings-2.csv	2	2	7	2	unresolved	multiple_complete_acquisitions_in_one_source_file
 sub-144	trust	pre	stimuli/psychopy/logs/144/sub144_Investment-Ratings-1.csv	2	2	9	4	unresolved	multiple_complete_acquisitions_in_one_source_file
 sub-144	trust	post	stimuli/psychopy/logs/144/sub144_Investment-Ratings-2.csv	2	2	9	7	unresolved	multiple_complete_acquisitions_in_one_source_file
-sub-144	sharedreward	post	stimuli/psychopy/logs/144/sub144_SR-Ratings-2.csv	2	2	5	4	unresolved	multiple_complete_acquisitions_in_one_source_file
+sub-144	sharedreward	post	stimuli/psychopy/logs/144/sub144_SR-Ratings-2.csv	2	2	5	4	retain_last_block	sharedreward_second_set_decision_rule
 sub-205	trust	pre	stimuli/psychopy/logs/205/sub205_Investment-Ratings-1.csv	2	2	6	5	unresolved	multiple_complete_acquisitions_in_one_source_file
 sub-210	trust	pre	stimuli/psychopy/logs/210/sub210_Investment-Ratings-1.csv	2	2	7	4	unresolved	multiple_complete_acquisitions_in_one_source_file
 sub-227	trust	post	stimuli/psychopy/logs/227/sub227_Investment-Ratings-2.csv	2	2	2	5	unresolved	multiple_complete_acquisitions_in_one_source_file

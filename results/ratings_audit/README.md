@@ -29,11 +29,21 @@ root-level `phenotype/` table. The audit does not yet write into `bids/`.
   `DVS-Lab/srndna` repository. The local Builder-generated `TrustRatings.py`
   uses a different output schema and 0--100 scale and therefore is not the
   script that generated these CSV files.
-- Shared Reward files contain partner-by-outcome ratings on an observed -5--5
-  scale. Existing analysis code maps trait 0 to win and trait 1 to loss. The
-  source acquisition script is absent. Session 2 is provisionally labeled
-  post-task because it is the only protocol-wide acquisition. The lone session
-  1 file, for sub-104, remains unresolved.
+- Shared Reward files contain partner-by-outcome ratings on a -5--5 scale.
+  Existing analysis code maps trait 0 to win and trait 1 to loss. The correct
+  `SR_postRatings.py` generator was recovered from the original `DVS-Lab/srndna`
+  history at content revision `b4f7132`, before its conflicted-merge deletion
+  in `261d98e`, and restored byte-for-byte beside its unchanged `SRratings.csv`
+  input. It writes the observed `SR-Ratings` schema. The script is preserved as
+  acquisition provenance rather than maintained software: it uses Python 2-era
+  PsychoPy syntax and refers to `SRRatings.csv` with different capitalization.
+  A different Builder-generated script, `SharedReward_PostRatings.py`, used an
+  incorrect -50--50 scale and was explicitly removed from `srndna` in 2019.
+- The study decision rule for repeated Shared Reward ratings retains the second
+  set and excludes the first. Accordingly, sub-104's session-1 file is
+  superseded by session 2, and the final complete block is retained from the
+  two-block sub-144 session-2 file. Both source sets remain represented in the
+  normalized audit table for provenance.
 
 ## Initial findings
 
@@ -47,11 +57,13 @@ root-level `phenotype/` table. The audit does not yet write into `bids/`.
   absent. Most missingness is concentrated in sub-106, sub-109, sub-110, and
   sub-143; Shared Reward ratings are also absent for seven additional imaging
   participants.
-- Ten imaging-participant files contain two complete acquisition blocks. Both
-  blocks are preserved in `ratings_normalized_rows.tsv`; none is silently
-  selected. Across the complete source tree, 23 files contain multiple blocks.
-  One behavioral-only file has two exactly identical blocks and can be safely
-  collapsed; the other repeated blocks contain changed ratings.
+- Ten imaging-participant files contain two complete acquisition blocks. All
+  blocks remain preserved in `ratings_normalized_rows.tsv`. The Shared Reward
+  rule resolves one of these files by retaining its last block; the remaining
+  nine still require review. Across the complete source tree, 23 files contain
+  multiple blocks. One behavioral-only file has two exactly identical blocks
+  and can be collapsed, one Shared Reward file is resolved by the second-set
+  rule, and 21 changed repeats remain unresolved.
 - Several files from different participants have identical byte content. The
   inventory records every matching path. Most are uniform/default response
   patterns, so identical content is a review flag rather than evidence that a
@@ -65,11 +77,29 @@ root-level `phenotype/` table. The audit does not yet write into `bids/`.
   source file, source session, and source block.
 - `ratings_subject_coverage.tsv`: expected pre/post coverage for the 50 current
   BIDS participants.
-- `ratings_repeat_review.tsv`: repeated acquisition blocks and the unresolved
-  Shared Reward session-1 file.
+- `ratings_repeat_review.tsv`: repeated acquisition blocks, their current
+  resolution status, and the superseded Shared Reward session-1 file.
 
-Before generating `*_beh.tsv`, resolve whether changed repeated blocks should
-be published as separate `run-01`/`run-02` acquisitions or whether the final
-block is an authoritative replacement. The repository import timestamps do not
-answer that question because all source files entered this repository in one
-bulk commit in 2022.
+Before generating `*_beh.tsv`, resolve whether the remaining changed repeated
+blocks should be published as separate `run-01`/`run-02` acquisitions or
+whether the final block is an authoritative replacement.
+
+## Timestamp provenance
+
+The `srndna-datapaper` import commit dates are not acquisition dates because
+the files entered this repository in one bulk copy in 2022. The original
+`DVS-Lab/srndna` history provides more useful transfer provenance:
+
+- All 46 BIDS participants with both imaging and ratings followed the fixed MRI
+  order Trust, Shared Reward, then Ultimatum after correcting the documented
+  100-year date shift in `*_scans.tsv`.
+- The first ratings commit occurred after the MRI session for all 46. It was on
+  the same calendar day for 29, within 24 hours for 30, and within seven days
+  for 36. Older early-study records were uploaded in later batches.
+- For all 46, ratings and raw task CSVs share at least one original participant
+  commit. For 43, every ratings and raw task file was introduced in the same
+  commit set; the other three had raw task files split across extra commits.
+- Every repeated ratings block was already present when its source file first
+  entered `srndna`; later commits did not append or overwrite those blocks.
+  Git therefore supports participant/session assignment but cannot timestamp
+  the individual repeated blocks within a file.

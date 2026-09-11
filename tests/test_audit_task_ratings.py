@@ -51,23 +51,46 @@ class AuditTaskRatingsTests(unittest.TestCase):
             self.assertEqual(repeated[0]["changed_cells_between_blocks"], 12)
             self.assertEqual(repeated[0]["maximum_absolute_change"], "1")
 
-    def test_sharedreward_session_one_is_unresolved(self):
+    def test_sharedreward_second_set_supersedes_first(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             logs = root / "logs/104"
             logs.mkdir(parents=True)
             (logs / "sub104_SR-Ratings-1.csv").write_text(ratings_block((0, 1), -5))
+            (logs / "sub104_SR-Ratings-2.csv").write_text(ratings_block((0, 1), -4))
             participants = root / "participants.tsv"
             participants.write_text("participant_id\nsub-104\n")
             files, normalized, coverage, repeated = MODULE.audit(logs.parent, participants)
-            self.assertEqual(files[0]["timepoint"], "unresolved")
-            self.assertIn("protocol_status_unresolved", files[0]["problems"])
-            self.assertEqual(normalized[0]["timepoint"], "unresolved")
-            self.assertIn("source_script_missing", repeated[0]["review_reason"])
+            self.assertEqual(files[0]["timepoint"], "post")
+            self.assertIn("superseded_sharedreward_first_set", files[0]["problems"])
+            self.assertEqual(normalized[0]["timepoint"], "post")
+            self.assertEqual(repeated[0]["resolution"], "exclude_superseded_first_set")
+            self.assertEqual(
+                repeated[0]["review_reason"],
+                "sharedreward_second_set_decision_rule",
+            )
             sharedreward = next(
                 row for row in coverage if row["task"] == "sharedreward"
             )
-            self.assertEqual(sharedreward["status"], "missing")
+            self.assertEqual(sharedreward["status"], "complete")
+
+    def test_sharedreward_last_appended_block_is_retained(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            logs = root / "logs/144"
+            logs.mkdir(parents=True)
+            (logs / "sub144_SR-Ratings-2.csv").write_text(
+                ratings_block((0, 1), -5) + ratings_block((0, 1), -4)
+            )
+            participants = root / "participants.tsv"
+            participants.write_text("participant_id\nsub-144\n")
+            _, normalized, coverage, repeated = MODULE.audit(logs.parent, participants)
+            self.assertEqual(len(normalized), 12)
+            self.assertEqual(repeated[0]["resolution"], "retain_last_block")
+            sharedreward = next(
+                row for row in coverage if row["task"] == "sharedreward"
+            )
+            self.assertEqual(sharedreward["status"], "resolved_last_block")
 
     def test_cli_writes_four_audit_tables(self):
         with tempfile.TemporaryDirectory() as temporary:
