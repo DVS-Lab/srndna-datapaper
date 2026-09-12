@@ -72,7 +72,7 @@ REPRODUCIBILITY_FILES = (
     "code/behavioral_analyses/sub-144_task-ultimatum_run-01_events.tsv",
     "code/behavioral_analyses/sub-144_task-ultimatum_run-02_events.tsv",
     "stimuli/convertUG_BIDS.m",
-    "stimuli/psychopy/SRRatings.csv",
+    "stimuli/psychopy/SRratings.csv",
     "stimuli/psychopy/SR_postRatings.py",
     "stimuli/psychopy/Trust.csv",
     "stimuli/psychopy/TrustRatings.py",

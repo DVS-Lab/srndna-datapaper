@@ -72,7 +72,7 @@ subjdir = '%s/logs/%s' % (expdir, subj_id)
 if not os.path.exists(subjdir):
     os.makedirs(subjdir)
 log_file = os.path.join(subjdir,'sub{}_SR-Ratings-{}.csv')
-trial_data = [r for r in csv.DictReader(open('SRRatings.csv','rU'))]
+trial_data = [r for r in csv.DictReader(open('SRratings.csv','rU'))]
 trials = data.TrialHandler(trial_data[:], 1, method="sequential")
 
 

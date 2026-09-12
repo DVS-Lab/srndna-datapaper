@@ -1,6 +1,7 @@
 import csv
 import collections
 import importlib.util
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -125,6 +126,14 @@ class PrepareOpenNeuroReleaseTests(unittest.TestCase):
             self.assertEqual(counts["single_trial_trust"], 218)
             self.assertEqual(counts["single_trial_sub144"], 4)
             self.assertEqual(counts["event_repair"], 4)
+
+    def test_reproducibility_inputs_are_git_tracked(self):
+        tracked = set(
+            subprocess.check_output(
+                ["git", "ls-files"], cwd=ROOT, text=True
+            ).splitlines()
+        )
+        self.assertTrue(set(MODULE.REPRODUCIBILITY_FILES) <= tracked)
 
 
 if __name__ == "__main__":
