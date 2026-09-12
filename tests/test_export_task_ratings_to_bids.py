@@ -110,7 +110,10 @@ class ExportTaskRatingsToBidsTests(unittest.TestCase):
                     sidecar["InstitutionalDepartmentName"],
                     "Department of Psychology",
                 )
-                self.assertNotIn("CogAtlasID", sidecar)
+                if task in {"trust", "ultimatum"}:
+                    self.assertTrue(sidecar["CogAtlasID"].startswith("https://"))
+                else:
+                    self.assertNotIn("CogAtlasID", sidecar)
                 self.assertIn("AcquisitionSelectionRule", sidecar)
                 self.assertEqual(
                     {"trial_number", "partner", "rating_dimension", "response"},

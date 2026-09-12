@@ -37,11 +37,23 @@ BEHAVIOR_SIDECARS = (
     "task-ultimatum_beh.json",
 )
 
+TASK_BOLD_SIDECARS = (
+    "task-sharedreward_bold.json",
+    "task-trust_bold.json",
+    "task-ultimatum_bold.json",
+)
+
 EVENT_REPAIRS = (
     "sub-144/func/sub-144_task-sharedreward_run-01_events.tsv",
     "sub-144/func/sub-144_task-sharedreward_run-02_events.tsv",
     "sub-144/func/sub-144_task-ultimatum_run-01_events.tsv",
     "sub-144/func/sub-144_task-ultimatum_run-02_events.tsv",
+)
+
+EVENT_SIDECARS = (
+    "task-sharedreward_events.json",
+    "task-trust_events.json",
+    "task-ultimatum_events.json",
 )
 
 SUB144_SINGLE_TRIALS = (
@@ -151,7 +163,9 @@ def make_release_plan(
     plan: list[ReleaseFile] = []
     add_repo_files(plan, repo_root, ROOT_METADATA, "root_metadata")
     add_repo_files(plan, repo_root, BEHAVIOR_SIDECARS, "behavior_sidecar")
+    add_repo_files(plan, repo_root, TASK_BOLD_SIDECARS, "task_bold_sidecar")
     add_repo_files(plan, repo_root, EVENT_REPAIRS, "event_repair")
+    add_repo_files(plan, repo_root, EVENT_SIDECARS, "event_sidecar")
 
     rating_manifest = (
         repo_root / "results/ratings_audit/ratings_bids_export_manifest.tsv"

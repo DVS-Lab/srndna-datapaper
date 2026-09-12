@@ -27,7 +27,12 @@ class PrepareOpenNeuroReleaseTests(unittest.TestCase):
         repo = root / "repo"
         dataset = root / "dataset"
         touch(dataset / "dataset_description.json", b"{}\n")
-        for relative in MODULE.ROOT_METADATA + MODULE.BEHAVIOR_SIDECARS:
+        for relative in (
+            MODULE.ROOT_METADATA
+            + MODULE.BEHAVIOR_SIDECARS
+            + MODULE.TASK_BOLD_SIDECARS
+            + MODULE.EVENT_SIDECARS
+        ):
             touch(repo / "bids" / relative)
         for relative in MODULE.EVENT_REPAIRS:
             touch(repo / "bids" / relative)
@@ -121,11 +126,30 @@ class PrepareOpenNeuroReleaseTests(unittest.TestCase):
             plan = MODULE.make_release_plan(ROOT, dataset)
             counts = collections.Counter(item.category for item in plan)
 
-            self.assertEqual(len(plan), 481)
+            self.assertEqual(len(plan), 487)
             self.assertEqual(counts["behavior_tsv"], 220)
             self.assertEqual(counts["single_trial_trust"], 218)
             self.assertEqual(counts["single_trial_sub144"], 4)
             self.assertEqual(counts["event_repair"], 4)
+            self.assertEqual(counts["event_sidecar"], 3)
+            self.assertEqual(counts["task_bold_sidecar"], 3)
+
+            ultimatum = __import__("json").loads(
+                (ROOT / "bids/task-ultimatum_events.json").read_text()
+            )
+            self.assertIn("Offer", ultimatum)
+            self.assertIn("IsFairBlock", ultimatum)
+            self.assertEqual(
+                ultimatum["StimulusPresentation"]["SoftwareName"], "PsychoPy"
+            )
+
+            for task in ("sharedreward", "trust", "ultimatum"):
+                bold = __import__("json").loads(
+                    (ROOT / f"bids/task-{task}_bold.json").read_text()
+                )
+                self.assertNotIn("TODO", str(bold))
+                self.assertTrue(bold["TaskDescription"])
+                self.assertTrue(bold["Instructions"])
 
     def test_reproducibility_inputs_are_git_tracked(self):
         tracked = set(

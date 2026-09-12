@@ -3,7 +3,7 @@
   "AcquisitionNumber": 1,
   "BandwidthPerPixelPhaseEncode": 27.579,
   "BaseResolution": 74,
-  "CogAtlasID": "http://www.cognitiveatlas.org/task/id/TODO",
+  "CogAtlasID": "https://www.cognitiveatlas.org/task/id/tsk_uzol7erTzr9Ix",
   "ConsistencyInfo": "N4_VE11C_LATEST_20160120",
   "ConversionSoftware": "dcm2niix",
   "ConversionSoftwareVersion": "v1.0.20190410  GCC6.3.0",
@@ -52,4 +52,6 @@
   "SpacingBetweenSlices": 3.22,
   "StationName": "AWP166048",
   "TaskName": "trust",
+  "TaskDescription": "Participants chose how much of an eight-dollar endowment to invest with a friend, an unfamiliar human partner, or a computer.",
+  "Instructions": "Choose between the two displayed investment amounts using buttons 2 and 3. Money sent to the partner is tripled before the partner reciprocates or defects.",
   "TotalReadoutTime": 0.0357695}

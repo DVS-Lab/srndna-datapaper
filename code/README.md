@@ -154,7 +154,8 @@ tree containing only the 2.2.0 changes. It requires exactly 220 rating TSVs,
 218 regenerated Trust single-trial images, four regenerated sub-144
 single-trial images, and the four approved sub-144 event repairs. It rejects
 all other event files, refuses an existing staging directory, and enforces a
-500-file hard limit. Large NIfTI files are hard-linked when the dataset and
+500-file hard limit. Task-level event sidecars document the corrected event
+columns and stimulus-presentation software. Large NIfTI files are hard-linked when the dataset and
 staging directory share a filesystem, with an automatic copy fallback.
 
 ```bash

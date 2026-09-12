@@ -1,0 +1,45 @@
+{
+  "trial_type": {
+    "LongName": "Trust task event type",
+    "Description": "Event category encoding choice or outcome phase, partner type, and reciprocation outcome when applicable."
+  },
+  "response_time": {
+    "Description": "Time from investment-choice presentation to the participant's response.",
+    "Units": "s"
+  },
+  "trust_value": {
+    "LongName": "Selected investment",
+    "Description": "Number of dollars from the participant's eight-dollar endowment selected for investment with the partner.",
+    "Units": "USD"
+  },
+  "choice": {
+    "Description": "Whether the participant selected the lower or higher displayed investment option.",
+    "Levels": {
+      "low": "Lower displayed investment option",
+      "high": "Higher displayed investment option"
+    }
+  },
+  "cLow": {
+    "LongName": "Lower investment option",
+    "Description": "Lower of the two investment amounts displayed on the trial.",
+    "Units": "USD"
+  },
+  "cHigh": {
+    "LongName": "Higher investment option",
+    "Description": "Higher of the two investment amounts displayed on the trial.",
+    "Units": "USD"
+  },
+  "StimulusPresentation": {
+    "SoftwareName": "PsychoPy",
+    "SoftwareRRID": "SCR_006571",
+    "Code": "https://github.com/DVS-Lab/srndna-datapaper/blob/fd86b28/stimuli/psychopy/Trust.py",
+    "ScreenOrigin": [
+      "center",
+      "center"
+    ],
+    "ScreenResolution": [
+      800,
+      600
+    ]
+  }
+}

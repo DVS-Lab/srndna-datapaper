@@ -3,7 +3,6 @@
   "AcquisitionNumber": 1,
   "BandwidthPerPixelPhaseEncode": 27.579,
   "BaseResolution": 74,
-  "CogAtlasID": "http://www.cognitiveatlas.org/task/id/TODO",
   "ConsistencyInfo": "N4_VE11C_LATEST_20160120",
   "ConversionSoftware": "dcm2niix",
   "ConversionSoftwareVersion": "v1.0.20190410  GCC6.3.0",
@@ -52,4 +51,6 @@
   "SpacingBetweenSlices": 3.22,
   "StationName": "AWP166048",
   "TaskName": "sharedreward",
+  "TaskDescription": "Participants guessed whether a card value was lower or higher than five while sharing monetary outcomes with a friend, an unfamiliar human partner, or a computer.",
+  "Instructions": "Press button 2 to guess lower than five or button 3 to guess higher than five. Correct guesses gain 10 dollars and incorrect guesses lose 5 dollars, shared with the displayed partner.",
   "TotalReadoutTime": 0.0357695}

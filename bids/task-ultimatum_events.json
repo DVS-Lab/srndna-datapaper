@@ -1,0 +1,36 @@
+{
+  "trial_type": {
+    "LongName": "Ultimatum Game event type",
+    "Description": "Event category encoding task phase, response when applicable, partner type, and block fairness."
+  },
+  "response_time": {
+    "Description": "Time from offer presentation to the participant's response.",
+    "Units": "s"
+  },
+  "Offer": {
+    "LongName": "Offer to participant",
+    "Description": "Number of dollars offered to the participant from the partner's 20-dollar endowment.",
+    "Units": "USD"
+  },
+  "IsFairBlock": {
+    "LongName": "Fairness block indicator",
+    "Description": "Whether the trial occurred in a block dominated by relatively fair or relatively unfair offers.",
+    "Levels": {
+      "0": "Relatively unfair-offer block",
+      "1": "Relatively fair-offer block"
+    }
+  },
+  "StimulusPresentation": {
+    "SoftwareName": "PsychoPy",
+    "SoftwareRRID": "SCR_006571",
+    "Code": "https://github.com/DVS-Lab/srndna-datapaper/blob/fd86b28/stimuli/psychopy/Ultimatum.py",
+    "ScreenOrigin": [
+      "center",
+      "center"
+    ],
+    "ScreenResolution": [
+      800,
+      600
+    ]
+  }
+}

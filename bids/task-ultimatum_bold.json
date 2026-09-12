@@ -3,7 +3,7 @@
   "AcquisitionNumber": 1,
   "BandwidthPerPixelPhaseEncode": 27.579,
   "BaseResolution": 74,
-  "CogAtlasID": "http://www.cognitiveatlas.org/task/id/TODO",
+  "CogAtlasID": "https://www.cognitiveatlas.org/task/id/trm_553e8882e3cb6/",
   "ConsistencyInfo": "N4_VE11C_LATEST_20160120",
   "ConversionSoftware": "dcm2niix",
   "ConversionSoftwareVersion": "v1.0.20190410  GCC6.3.0",
@@ -52,4 +52,6 @@
   "SpacingBetweenSlices": 3.22,
   "StationName": "AWP166048",
   "TaskName": "ultimatum",
+  "TaskDescription": "Participants decided whether to accept or reject monetary offers from computer and human partners.",
+  "Instructions": "Choose whether to accept or reject each proposed division of a 20-dollar endowment. Press button 2 to reject and button 3 to accept; rejection gives both players zero dollars.",
   "TotalReadoutTime": 0.0357695}

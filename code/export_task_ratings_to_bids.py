@@ -46,6 +46,7 @@ TASK_METADATA = {
     "ultimatum": {
         "TaskName": "ultimatum",
         "TaskDescription": "Ratings of partners in the Ultimatum Game task.",
+        "CogAtlasID": "https://www.cognitiveatlas.org/task/id/trm_553e8882e3cb6/",
         "Instructions": (
             "Use the button box to rate each partner. Before the task, rate "
             "partner fairness and likeability; after the task, also rate anger "
@@ -68,6 +69,7 @@ TASK_METADATA = {
     "trust": {
         "TaskName": "trust",
         "TaskDescription": "Ratings of partners in the Trust task.",
+        "CogAtlasID": "https://www.cognitiveatlas.org/task/id/tsk_uzol7erTzr9Ix",
         "Instructions": (
             "Use the response controls to rate how trustworthy, likeable, and "
             "approachable each partner appears before and after the task."
@@ -218,6 +220,11 @@ def sidecar(task: str) -> dict[str, object]:
         "TaskName": metadata["TaskName"],
         "TaskDescription": metadata["TaskDescription"],
         "Instructions": metadata["Instructions"],
+        **(
+            {"CogAtlasID": metadata["CogAtlasID"]}
+            if "CogAtlasID" in metadata
+            else {}
+        ),
         **ACQUISITION_METADATA,
         "AcquisitionLabels": {
             "pre": "Ratings acquired before the associated task",

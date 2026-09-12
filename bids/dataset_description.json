@@ -16,6 +16,18 @@
     "NIH R03-DA046733 (awarded to DVS)",
     "NIH R15-MH122927 (awarded to DSF)"
   ],
+  "GeneratedBy": [
+    {
+      "Name": "dcm2niix",
+      "Version": "v1.0.20190410",
+      "Description": "Converted source DICOM imaging data to NIfTI and JSON sidecars."
+    },
+    {
+      "Name": "SRNDNA BIDS conversion scripts",
+      "Description": "Converted task logs and curated behavioral metadata into BIDS tabular files.",
+      "CodeURL": "https://github.com/DVS-Lab/srndna-datapaper/tree/fd86b28/stimuli"
+    }
+  ],
   "HowToAcknowledge": "Please cite the Scientific Data descriptor and relevant task-specific publications listed in ReferencesAndLinks.",
   "License": "CC0-1.0",
   "Name": "Social Reward Processing and Decision Making in Younger and Older Adults",

@@ -1,0 +1,23 @@
+{
+  "trial_type": {
+    "LongName": "Shared Reward event type",
+    "Description": "Event category encoding task phase, partner type, and monetary outcome or block type."
+  },
+  "response_time": {
+    "Description": "Time from card presentation to the participant's response.",
+    "Units": "s"
+  },
+  "StimulusPresentation": {
+    "SoftwareName": "PsychoPy",
+    "SoftwareRRID": "SCR_006571",
+    "Code": "https://github.com/DVS-Lab/srndna-datapaper/blob/fd86b28/stimuli/psychopy/SharedReward.py",
+    "ScreenOrigin": [
+      "center",
+      "center"
+    ],
+    "ScreenResolution": [
+      800,
+      600
+    ]
+  }
+}
