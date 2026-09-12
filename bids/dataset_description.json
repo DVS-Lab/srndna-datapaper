@@ -4,11 +4,11 @@
     "David V. Smith",
     "Rita Ludwig",
     "Jeffrey Dennison",
-    "Tania Giovannetti",
+    "Crystal Reeck",
     "Dominic Fareri"
   ],
   "BIDSVersion": "1.4.1",
-  "DatasetDOI": "TODO: eventually a DOI for the dataset",
+  "DatasetDOI": "doi:10.18112/openneuro.ds003745.v2.2.0",
   "Funding": [
     "Pilot Grant from Scientific Research Network on Decision Neuroscience and Aging (awarded to DVS; subaward of NIH R24-AG054355, PI Gregory Samanez-Larkin)",
     "NIH RF1-AG067011 (awarded to DVS)",
@@ -16,10 +16,11 @@
     "NIH R03-DA046733 (awarded to DVS)",
     "NIH R15-MH122927 (awarded to DSF)"
   ],
-  "HowToAcknowledge": "Please consider citing our NeuroImage paper and our Data Descriptor (submitted to Scientific Data and available on bioRxiv). See references and links below.",
-  "License": "TODO: choose a license, e.g. PDDL (http://opendatacommons.org/licenses/pddl/)",
+  "HowToAcknowledge": "Please cite the Scientific Data descriptor and relevant task-specific publications listed in ReferencesAndLinks.",
+  "License": "CC0-1.0",
   "Name": "Social Reward Processing and Decision Making in Younger and Older Adults",
   "ReferencesAndLinks": [
+    "Smith, D. V., Ludwig, R. M., Dennison, J. B., Reeck, C., & Fareri, D. S. (2024). An fMRI Dataset on Social Reward Processing and Decision Making in Younger and Older Adults. Scientific Data, 11, 158. https://doi.org/10.1038/s41597-024-02931-y",
     "Fareri, D. S., Hackett, K., Tepfer, L. J., Kelly, V., Henninger, N., Reeck, C., Giovannetti, T., Smith, D.V. (2022). Age-related differences in ventral striatal and default mode network function during reciprocated trust. NeuroImage, 256, 119267. doi: https://doi.org/10.1016/j.neuroimage.2022.119267"
   ]
 }

@@ -74,6 +74,7 @@ REPAIRS = (
         "ff86e33b0f82a4d4e5ed7c48d60ffb41b13e9c8e109f025f8d1684dce292b3e5",
         accepted_previous_sha256=(
             "e5ce7ce76906a244b1fbab2b0bcb25d6e749ed2d80a1dd80c8e1184b671d9140",
+            "aca6f0dc4c7d36080fabca5781f23218c6613263c7e1ae093a7d93c0a0e6eb2b",
         ),
     ),
 )

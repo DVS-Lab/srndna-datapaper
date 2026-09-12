@@ -1,5 +1,9 @@
 # SRNDNA: Data Management and Preprocessing
-This repository contains the final code for managing and processing all of the data in our SRDNDA project. The data live on OpenNeuro (https://openneuro.org/datasets/ds003745/), and a preprint of a data paper has been posted to PsyArxiv (https://doi.org/10.31234/osf.io/k7d56) and is under consideration at Scientific Data.
+This repository contains the code used to manage and process data from the
+SRNDNA project. The data are available as
+[OpenNeuro dataset ds003745](https://openneuro.org/datasets/ds003745/), and the
+dataset is described in a published
+[Scientific Data article](https://doi.org/10.1038/s41597-024-02931-y).
 
 ## A few prerequisites and recommendations
 - Understand BIDS and be comfortable navigating Linux
