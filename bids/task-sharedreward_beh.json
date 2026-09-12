@@ -1,6 +1,10 @@
 {
   "TaskName": "sharedreward",
   "TaskDescription": "Post-task partner-by-outcome ratings from the Shared Reward task.",
+  "Instructions": "Use the button box to rate how it felt to win or lose money with each partner.",
+  "InstitutionName": "Temple University",
+  "InstitutionAddress": "1701 North 13th Street, Philadelphia, PA 19122, USA",
+  "InstitutionalDepartmentName": "Department of Psychology",
   "AcquisitionLabels": {
     "pre": "Ratings acquired before the associated task",
     "post": "Ratings acquired after the associated task"

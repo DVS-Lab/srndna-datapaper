@@ -104,6 +104,13 @@ class ExportTaskRatingsToBidsTests(unittest.TestCase):
             for task in MODULE.TASK_METADATA:
                 sidecar = json.loads((bids / f"task-{task}_beh.json").read_text())
                 self.assertEqual(sidecar["TaskName"], task)
+                self.assertTrue(sidecar["Instructions"])
+                self.assertEqual(sidecar["InstitutionName"], "Temple University")
+                self.assertEqual(
+                    sidecar["InstitutionalDepartmentName"],
+                    "Department of Psychology",
+                )
+                self.assertNotIn("CogAtlasID", sidecar)
                 self.assertIn("AcquisitionSelectionRule", sidecar)
                 self.assertEqual(
                     {"trial_number", "partner", "rating_dimension", "response"},

@@ -46,6 +46,11 @@ TASK_METADATA = {
     "ultimatum": {
         "TaskName": "ultimatum",
         "TaskDescription": "Ratings of partners in the Ultimatum Game task.",
+        "Instructions": (
+            "Use the button box to rate each partner. Before the task, rate "
+            "partner fairness and likeability; after the task, also rate anger "
+            "and satisfaction with offers from each partner."
+        ),
         "partner_levels": {
             "computer": "Computer partner",
             "dissimilar": "Human partner described as dissimilar to the participant",
@@ -63,6 +68,10 @@ TASK_METADATA = {
     "trust": {
         "TaskName": "trust",
         "TaskDescription": "Ratings of partners in the Trust task.",
+        "Instructions": (
+            "Use the response controls to rate how trustworthy, likeable, and "
+            "approachable each partner appears before and after the task."
+        ),
         "partner_levels": {
             "computer": "Computer partner",
             "stranger": "Unfamiliar human partner",
@@ -79,6 +88,10 @@ TASK_METADATA = {
     "sharedreward": {
         "TaskName": "sharedreward",
         "TaskDescription": "Post-task partner-by-outcome ratings from the Shared Reward task.",
+        "Instructions": (
+            "Use the button box to rate how it felt to win or lose money with "
+            "each partner."
+        ),
         "partner_levels": {
             "computer": "Computer partner",
             "stranger": "Unfamiliar human partner",
@@ -91,6 +104,12 @@ TASK_METADATA = {
         "minimum": -5,
         "maximum": 5,
     },
+}
+
+ACQUISITION_METADATA = {
+    "InstitutionName": "Temple University",
+    "InstitutionAddress": "1701 North 13th Street, Philadelphia, PA 19122, USA",
+    "InstitutionalDepartmentName": "Department of Psychology",
 }
 
 SELECTION_RULE = (
@@ -198,6 +217,8 @@ def sidecar(task: str) -> dict[str, object]:
     return {
         "TaskName": metadata["TaskName"],
         "TaskDescription": metadata["TaskDescription"],
+        "Instructions": metadata["Instructions"],
+        **ACQUISITION_METADATA,
         "AcquisitionLabels": {
             "pre": "Ratings acquired before the associated task",
             "post": "Ratings acquired after the associated task",

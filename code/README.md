@@ -147,6 +147,25 @@ python3 code/export_task_ratings_to_bids.py
 These task-linked, untimed item responses are behavioral recordings rather
 than participant-level phenotype summaries.
 
+## OpenNeuro 2.2.0 release staging
+
+`prepare_openneuro_2_2_release.py` builds a sparse, checksum-inventoried upload
+tree containing only the 2.2.0 changes. It requires exactly 220 rating TSVs,
+218 regenerated Trust single-trial images, four regenerated sub-144
+single-trial images, and the four approved sub-144 event repairs. It rejects
+all other event files, refuses an existing staging directory, and enforces a
+500-file hard limit. Large NIfTI files are hard-linked when the dataset and
+staging directory share a filesystem, with an automatic copy fallback.
+
+```bash
+python3 code/prepare_openneuro_2_2_release.py \
+  --dataset-root /path/to/complete-ds003745-download \
+  --staging-root /path/to/new-sparse-staging-directory
+```
+
+Upload that staging directory without OpenNeuro's `--delete` option. Files
+absent from the sparse tree must remain untouched in the existing dataset.
+
 
 
 
