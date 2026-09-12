@@ -165,6 +165,8 @@ def make_release_plan(
         raise ValueError("ratings manifest unexpectedly contains sub-143")
     for row in rating_rows:
         relative = Path(row["destination"])
+        if relative.is_absolute() or ".." in relative.parts:
+            raise ValueError(f"unsafe rating destination: {relative}")
         plan.append(
             ReleaseFile(
                 "behavior_tsv",
@@ -226,6 +228,9 @@ def make_release_plan(
     missing = [str(item.source) for item in plan if not item.source.is_file()]
     if missing:
         raise FileNotFoundError("missing release inputs:\n" + "\n".join(missing))
+    empty = [str(item.source) for item in plan if item.source.stat().st_size == 0]
+    if empty:
+        raise ValueError("empty release inputs:\n" + "\n".join(empty))
     if len(plan) > 500:
         raise ValueError(f"release plan has {len(plan)} files; hard limit is 500")
     return plan
@@ -244,7 +249,7 @@ def materialize(
     )
     inventory: list[dict[str, object]] = []
     try:
-        for item in plan:
+        for index, item in enumerate(plan, 1):
             destination = temporary / item.destination
             destination.parent.mkdir(parents=True, exist_ok=True)
             method = "copy"
@@ -272,6 +277,8 @@ def materialize(
                     "materialization": method,
                 }
             )
+            if index % 25 == 0 or index == len(plan):
+                print(f"Staged {index}/{len(plan)} files")
         os.replace(temporary, staging_root)
     except Exception:
         shutil.rmtree(temporary, ignore_errors=True)
