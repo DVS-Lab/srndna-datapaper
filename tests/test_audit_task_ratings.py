@@ -47,9 +47,14 @@ class AuditTaskRatingsTests(unittest.TestCase):
                 for row in coverage
                 if row["task"] == "ultimatum" and row["timepoint"] == "post"
             )
-            self.assertEqual(post["status"], "multiple_blocks_needs_review")
+            self.assertEqual(post["status"], "resolved_last_block")
             self.assertEqual(repeated[0]["changed_cells_between_blocks"], 12)
             self.assertEqual(repeated[0]["maximum_absolute_change"], "1")
+            self.assertEqual(repeated[0]["resolution"], "retain_last_block")
+            self.assertEqual(
+                repeated[0]["review_reason"],
+                "repeated_acquisition_version_of_record_rule",
+            )
 
     def test_sharedreward_second_set_supersedes_first(self):
         with tempfile.TemporaryDirectory() as temporary:

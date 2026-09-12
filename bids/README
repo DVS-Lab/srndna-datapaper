@@ -1,4 +1,10 @@
 # Data
-This is BIDS dataset contains data that was first published in Fareri et al., 2022, NeuroImage.
 
-What else should go here?
+This BIDS dataset contains neuroimaging and behavioral data from the Social
+Reward and Decision Neuroscience in Aging study.
+
+Partner ratings that were collected before or after the Trust, Shared Reward,
+and Ultimatum tasks are stored as subject-level behavioral recordings under
+`sub-*/beh/`. The `acq-pre` and `acq-post` entities indicate collection timing.
+When an acquisition was repeated, the final complete attempt is the version of
+record. Missing ratings were not imputed.

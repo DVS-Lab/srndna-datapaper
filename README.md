@@ -18,6 +18,11 @@ This repository contains the final code for managing and processing all of the d
   - `bids`: contains the standardized "raw" in BIDS format (output of heudiconv)
   - `stimuli`: psychopy scripts and matlab scripts for delivering stimuli and organizing output. This directory also contains the sourcedata for the raw behavioral data.
 
+Task-linked partner ratings are stored under `bids/sub-*/beh/` as untimed BIDS
+behavioral recordings. Task-level JSON sidecars document their columns and
+rating scales. When an acquisition was repeated, the final complete attempt is
+the version of record; the source audit preserves all attempts.
+
 
 ## Downloading Data and Running Preprocessing
 ```

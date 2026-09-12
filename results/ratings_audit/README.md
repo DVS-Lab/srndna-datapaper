@@ -1,7 +1,8 @@
 # Task-ratings audit
 
 This audit inventories the partner-rating CSV files under
-`stimuli/psychopy/logs` before any new files are added to the BIDS dataset.
+`stimuli/psychopy/logs` and records the exact inputs exported to the BIDS
+dataset.
 Run it from the repository root with:
 
 ```bash
@@ -12,9 +13,10 @@ python3 code/audit_task_ratings.py
 
 The ratings are item-level responses linked to the Ultimatum, Trust, and
 Shared Reward tasks. They are not participant-level questionnaire summaries.
-Because they do not contain onset and duration, the intended representation is
-one or more subject-level `sub-*/beh/*_beh.tsv` files with JSON sidecars, not a
-root-level `phenotype/` table. The audit does not yet write into `bids/`.
+Because they do not contain onset and duration, they are represented as
+subject-level `sub-*/beh/*_beh.tsv` files with task-level JSON sidecars, not a
+root-level `phenotype/` table. The `acq-pre` and `acq-post` labels distinguish
+ratings collected before and after each associated task.
 
 ## Protocol evidence
 
@@ -39,10 +41,10 @@ root-level `phenotype/` table. The audit does not yet write into `bids/`.
   PsychoPy syntax and refers to `SRRatings.csv` with different capitalization.
   A different Builder-generated script, `SharedReward_PostRatings.py`, used an
   incorrect -50--50 scale and was explicitly removed from `srndna` in 2019.
-- The study decision rule for repeated Shared Reward ratings retains the second
-  set and excludes the first. Accordingly, sub-104's session-1 file is
-  superseded by session 2, and the final complete block is retained from the
-  two-block sub-144 session-2 file. Both source sets remain represented in the
+- The study decision rule for every task treats the final complete repeated
+  attempt as the version of record. Accordingly, Shared Reward session 2
+  supersedes session 1 when both exist, and the final complete block is retained
+  whenever a source file contains appended attempts. All attempts remain in the
   normalized audit table for provenance.
 
 ## Initial findings
@@ -58,12 +60,10 @@ root-level `phenotype/` table. The audit does not yet write into `bids/`.
   sub-143; Shared Reward ratings are also absent for seven additional imaging
   participants.
 - Ten imaging-participant files contain two complete acquisition blocks. All
-  blocks remain preserved in `ratings_normalized_rows.tsv`. The Shared Reward
-  rule resolves one of these files by retaining its last block; the remaining
-  nine still require review. Across the complete source tree, 23 files contain
-  multiple blocks. One behavioral-only file has two exactly identical blocks
-  and can be collapsed, one Shared Reward file is resolved by the second-set
-  rule, and 21 changed repeats remain unresolved.
+  blocks remain preserved in `ratings_normalized_rows.tsv`, and the final
+  complete block is selected for BIDS. Across the complete source tree, 23
+  files contain multiple blocks; none remain unresolved under the uniform
+  final-attempt rule.
 - Several files from different participants have identical byte content. The
   inventory records every matching path. Most are uniform/default response
   patterns, so identical content is a review flag rather than evidence that a
@@ -78,11 +78,14 @@ root-level `phenotype/` table. The audit does not yet write into `bids/`.
 - `ratings_subject_coverage.tsv`: expected pre/post coverage for the 50 current
   BIDS participants.
 - `ratings_repeat_review.tsv`: repeated acquisition blocks, their current
-  resolution status, and the superseded Shared Reward session-1 file.
+  resolution status, and superseded Shared Reward session-1 files.
+- `ratings_bids_export_manifest.tsv`: one row per exported behavioral
+  acquisition, including the selected source session/block, destination,
+  row count, and SHA-256 checksum.
 
-Before generating `*_beh.tsv`, resolve whether the remaining changed repeated
-blocks should be published as separate `run-01`/`run-02` acquisitions or
-whether the final block is an authoritative replacement.
+The export contains 220 acquisitions: 90 Ultimatum, 91 Trust, and 39 Shared
+Reward files. Missing ratings are not imputed. In particular, no task-ratings
+source exists for sub-143, so no `beh` file is created for that participant.
 
 ## Timestamp provenance
 

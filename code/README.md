@@ -131,12 +131,21 @@ and reports coverage against `bids/participants.tsv`:
 python3 code/audit_task_ratings.py
 ```
 
-The four small TSV outputs in `results/ratings_audit` retain source paths and
-SHA-256 hashes, normalized item-level responses, expected measurement coverage,
-and every acquisition that still requires review. The audit intentionally does
-not write into the BIDS tree. These task-linked, untimed item responses are
-intended for subject-level `beh/*_beh.tsv` files after acquisition ambiguities
-are resolved; they are not treated as participant-level phenotype summaries.
+The four audit TSVs in `results/ratings_audit` retain source paths and SHA-256
+hashes, normalized item-level responses, expected measurement coverage, and
+the resolution of every repeated acquisition. The uniform curation rule treats
+the final complete attempt as the version of record for all three tasks.
+
+`export_task_ratings_to_bids.py` applies that rule and writes subject-level
+`beh/*_beh.tsv` files, three task-level JSON sidecars, and a checksum manifest:
+
+```bash
+python3 code/audit_task_ratings.py
+python3 code/export_task_ratings_to_bids.py
+```
+
+These task-linked, untimed item responses are behavioral recordings rather
+than participant-level phenotype summaries.
 
 
 

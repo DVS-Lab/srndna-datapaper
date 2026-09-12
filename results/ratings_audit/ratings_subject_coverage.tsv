@@ -5,7 +5,7 @@ sub-104	trust	pre	true	1	1	stimuli/psychopy/logs/104/sub104_Investment-Ratings-1
 sub-104	trust	post	true	0	0		missing
 sub-104	sharedreward	post	true	1	1	stimuli/psychopy/logs/104/sub104_SR-Ratings-2.csv	complete
 sub-105	ultimatum	pre	true	0	0		missing
-sub-105	ultimatum	post	true	1	2	stimuli/psychopy/logs/105/sub105_Bargaining-Ratings-2.csv	multiple_blocks_needs_review
+sub-105	ultimatum	post	true	1	2	stimuli/psychopy/logs/105/sub105_Bargaining-Ratings-2.csv	resolved_last_block
 sub-105	trust	pre	true	1	1	stimuli/psychopy/logs/105/sub105_Investment-Ratings-1.csv	complete
 sub-105	trust	post	true	1	1	stimuli/psychopy/logs/105/sub105_Investment-Ratings-2.csv	complete
 sub-105	sharedreward	post	true	0	0		missing
@@ -87,7 +87,7 @@ sub-122	sharedreward	post	true	1	1	stimuli/psychopy/logs/122/sub122_SR-Ratings-2
 sub-124	ultimatum	pre	true	1	1	stimuli/psychopy/logs/124/sub124_Bargaining-Ratings-1.csv	complete
 sub-124	ultimatum	post	true	1	1	stimuli/psychopy/logs/124/sub124_Bargaining-Ratings-2.csv	complete
 sub-124	trust	pre	true	1	1	stimuli/psychopy/logs/124/sub124_Investment-Ratings-1.csv	complete
-sub-124	trust	post	true	1	2	stimuli/psychopy/logs/124/sub124_Investment-Ratings-2.csv	multiple_blocks_needs_review
+sub-124	trust	post	true	1	2	stimuli/psychopy/logs/124/sub124_Investment-Ratings-2.csv	resolved_last_block
 sub-124	sharedreward	post	true	1	1	stimuli/psychopy/logs/124/sub124_SR-Ratings-2.csv	complete
 sub-125	ultimatum	pre	true	1	1	stimuli/psychopy/logs/125/sub125_Bargaining-Ratings-1.csv	complete
 sub-125	ultimatum	post	true	1	1	stimuli/psychopy/logs/125/sub125_Bargaining-Ratings-2.csv	complete
@@ -116,7 +116,7 @@ sub-129	trust	post	true	1	1	stimuli/psychopy/logs/129/sub129_Investment-Ratings-
 sub-129	sharedreward	post	true	1	1	stimuli/psychopy/logs/129/sub129_SR-Ratings-2.csv	complete
 sub-130	ultimatum	pre	true	1	1	stimuli/psychopy/logs/130/sub130_Bargaining-Ratings-1.csv	complete
 sub-130	ultimatum	post	true	1	1	stimuli/psychopy/logs/130/sub130_Bargaining-Ratings-2.csv	complete
-sub-130	trust	pre	true	1	2	stimuli/psychopy/logs/130/sub130_Investment-Ratings-1.csv	multiple_blocks_needs_review
+sub-130	trust	pre	true	1	2	stimuli/psychopy/logs/130/sub130_Investment-Ratings-1.csv	resolved_last_block
 sub-130	trust	post	true	1	1	stimuli/psychopy/logs/130/sub130_Investment-Ratings-2.csv	complete
 sub-130	sharedreward	post	true	0	0		missing
 sub-131	ultimatum	pre	true	1	1	stimuli/psychopy/logs/131/sub131_Bargaining-Ratings-1.csv	complete
@@ -135,8 +135,8 @@ sub-133	trust	pre	true	1	1	stimuli/psychopy/logs/133/sub133_Investment-Ratings-1
 sub-133	trust	post	true	1	1	stimuli/psychopy/logs/133/sub133_Investment-Ratings-2.csv	complete
 sub-133	sharedreward	post	true	0	0		missing
 sub-134	ultimatum	pre	true	1	1	stimuli/psychopy/logs/134/sub134_Bargaining-Ratings-1.csv	complete
-sub-134	ultimatum	post	true	1	2	stimuli/psychopy/logs/134/sub134_Bargaining-Ratings-2.csv	multiple_blocks_needs_review
-sub-134	trust	pre	true	1	2	stimuli/psychopy/logs/134/sub134_Investment-Ratings-1.csv	multiple_blocks_needs_review
+sub-134	ultimatum	post	true	1	2	stimuli/psychopy/logs/134/sub134_Bargaining-Ratings-2.csv	resolved_last_block
+sub-134	trust	pre	true	1	2	stimuli/psychopy/logs/134/sub134_Investment-Ratings-1.csv	resolved_last_block
 sub-134	trust	post	true	1	1	stimuli/psychopy/logs/134/sub134_Investment-Ratings-2.csv	complete
 sub-134	sharedreward	post	true	0	0		missing
 sub-135	ultimatum	pre	true	1	1	stimuli/psychopy/logs/135/sub135_Bargaining-Ratings-1.csv	complete
@@ -179,10 +179,10 @@ sub-143	ultimatum	post	true	0	0		missing
 sub-143	trust	pre	true	0	0		missing
 sub-143	trust	post	true	0	0		missing
 sub-143	sharedreward	post	true	0	0		missing
-sub-144	ultimatum	pre	true	1	2	stimuli/psychopy/logs/144/sub144_Bargaining-Ratings-1.csv	multiple_blocks_needs_review
-sub-144	ultimatum	post	true	1	2	stimuli/psychopy/logs/144/sub144_Bargaining-Ratings-2.csv	multiple_blocks_needs_review
-sub-144	trust	pre	true	1	2	stimuli/psychopy/logs/144/sub144_Investment-Ratings-1.csv	multiple_blocks_needs_review
-sub-144	trust	post	true	1	2	stimuli/psychopy/logs/144/sub144_Investment-Ratings-2.csv	multiple_blocks_needs_review
+sub-144	ultimatum	pre	true	1	2	stimuli/psychopy/logs/144/sub144_Bargaining-Ratings-1.csv	resolved_last_block
+sub-144	ultimatum	post	true	1	2	stimuli/psychopy/logs/144/sub144_Bargaining-Ratings-2.csv	resolved_last_block
+sub-144	trust	pre	true	1	2	stimuli/psychopy/logs/144/sub144_Investment-Ratings-1.csv	resolved_last_block
+sub-144	trust	post	true	1	2	stimuli/psychopy/logs/144/sub144_Investment-Ratings-2.csv	resolved_last_block
 sub-144	sharedreward	post	true	1	2	stimuli/psychopy/logs/144/sub144_SR-Ratings-2.csv	resolved_last_block
 sub-145	ultimatum	pre	true	1	1	stimuli/psychopy/logs/145/sub145_Bargaining-Ratings-1.csv	complete
 sub-145	ultimatum	post	true	1	1	stimuli/psychopy/logs/145/sub145_Bargaining-Ratings-2.csv	complete

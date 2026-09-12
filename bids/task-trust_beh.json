@@ -1,0 +1,34 @@
+{
+  "TaskName": "trust",
+  "TaskDescription": "Ratings of partners in the Trust task.",
+  "AcquisitionLabels": {
+    "pre": "Ratings acquired before the associated task",
+    "post": "Ratings acquired after the associated task"
+  },
+  "AcquisitionSelectionRule": "When ratings were acquired more than once for the same participant, task, and pre/post timepoint, the final complete attempt is the version of record.",
+  "trial_number": {
+    "Description": "Presentation order within the retained rating attempt."
+  },
+  "partner": {
+    "Description": "Partner evaluated by the participant.",
+    "Levels": {
+      "computer": "Computer partner",
+      "stranger": "Unfamiliar human partner",
+      "friend": "Familiar human partner"
+    }
+  },
+  "rating_dimension": {
+    "Description": "Attribute or outcome evaluated for the partner.",
+    "Levels": {
+      "approachability": "Perceived approachability of the partner",
+      "likeability": "Perceived likeability of the partner",
+      "trustworthiness": "Perceived trustworthiness of the partner"
+    }
+  },
+  "response": {
+    "Description": "Participant rating response.",
+    "Units": "rating scale points",
+    "Minimum": 0,
+    "Maximum": 10
+  }
+}

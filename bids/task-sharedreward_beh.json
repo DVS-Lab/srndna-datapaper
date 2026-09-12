@@ -1,0 +1,33 @@
+{
+  "TaskName": "sharedreward",
+  "TaskDescription": "Post-task partner-by-outcome ratings from the Shared Reward task.",
+  "AcquisitionLabels": {
+    "pre": "Ratings acquired before the associated task",
+    "post": "Ratings acquired after the associated task"
+  },
+  "AcquisitionSelectionRule": "When ratings were acquired more than once for the same participant, task, and pre/post timepoint, the final complete attempt is the version of record.",
+  "trial_number": {
+    "Description": "Presentation order within the retained rating attempt."
+  },
+  "partner": {
+    "Description": "Partner evaluated by the participant.",
+    "Levels": {
+      "computer": "Computer partner",
+      "stranger": "Unfamiliar human partner",
+      "friend": "Familiar human partner"
+    }
+  },
+  "rating_dimension": {
+    "Description": "Attribute or outcome evaluated for the partner.",
+    "Levels": {
+      "win": "Rating associated with winning with the partner",
+      "loss": "Rating associated with losing with the partner"
+    }
+  },
+  "response": {
+    "Description": "Participant rating response.",
+    "Units": "rating scale points",
+    "Minimum": -5,
+    "Maximum": 5
+  }
+}

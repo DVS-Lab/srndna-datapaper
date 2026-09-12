@@ -365,15 +365,12 @@ def audit(
                 changed = sum(difference != 0 for difference in differences)
                 maximum = f"{max(differences, default=0):g}"
             exact_duplicate = changed == 0
-            if family == "SR":
-                resolution = "retain_last_block"
-                review_reason = "sharedreward_second_set_decision_rule"
-            elif exact_duplicate:
+            if exact_duplicate:
                 resolution = "collapse_exact_duplicate"
                 review_reason = "exact_duplicate_acquisition_block"
             else:
-                resolution = "unresolved"
-                review_reason = "multiple_complete_acquisitions_in_one_source_file"
+                resolution = "retain_last_block"
+                review_reason = "repeated_acquisition_version_of_record_rule"
             repeat_review.append(
                 {
                     "participant_id": f"sub-{subject}",
@@ -459,11 +456,7 @@ def audit(
                 elif len(matched) > 1:
                     status = "multiple_files"
                 elif n_blocks > 1:
-                    status = (
-                        "resolved_last_block"
-                        if spec.task == "sharedreward"
-                        else "multiple_blocks_needs_review"
-                    )
+                    status = "resolved_last_block"
                 elif matched[0]["status"] == "complete":
                     status = "complete"
                 else:
@@ -567,12 +560,17 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     included_files = sum(row["included_in_participants"] == "true" for row in files)
     missing = sum(row["status"] == "missing" for row in coverage)
-    repeated = sum(row["status"] == "multiple_blocks_needs_review" for row in coverage)
+    unresolved_repeated = sum(
+        row["status"] == "multiple_blocks_needs_review" for row in coverage
+    )
     print(f"Rating source files inventoried: {len(files)}")
     print(f"Files belonging to participants.tsv: {included_files}")
     print(f"Normalized rating rows: {len(normalized)}")
     print(f"Expected participant/task/timepoint cells missing: {missing}")
-    print(f"Expected cells with multiple acquisition blocks: {repeated}")
+    print(
+        "Expected cells with unresolved multiple acquisition blocks: "
+        f"{unresolved_repeated}"
+    )
     unresolved = sum(row["resolution"] == "unresolved" for row in repeat_review)
     print(f"Acquisition resolution records: {len(repeat_review)}")
     print(f"Unresolved acquisition items: {unresolved}")
