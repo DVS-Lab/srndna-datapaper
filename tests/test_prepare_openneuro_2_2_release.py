@@ -151,6 +151,23 @@ class PrepareOpenNeuroReleaseTests(unittest.TestCase):
                 self.assertTrue(bold["TaskDescription"])
                 self.assertTrue(bold["Instructions"])
 
+            description = __import__("json").loads(
+                (ROOT / "bids/dataset_description.json").read_text()
+            )
+            acknowledgment = description["HowToAcknowledge"]
+            for doi in (
+                "10.1016/j.neuroimage.2022.119267",
+                "10.1038/s41597-024-02931-y",
+                "10.1101/2025.08.13.670194",
+            ):
+                self.assertIn(doi, acknowledgment)
+                self.assertTrue(
+                    any(
+                        doi in citation
+                        for citation in description["ReferencesAndLinks"]
+                    )
+                )
+
     def test_reproducibility_inputs_are_git_tracked(self):
         tracked = set(
             subprocess.check_output(

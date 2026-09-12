@@ -8,6 +8,7 @@
   - add task-linked partner ratings as subject-level BIDS behavioral recordings
     with JSON data dictionaries; retain the final complete attempt when a
     ratings acquisition was repeated
+  - update dataset provenance, task metadata, and citation guidance
 2.1.1 2024-01-07
   - add stimuli and code subfolders to dataset and update .bidsignore
 2.1.0 2024-01-03

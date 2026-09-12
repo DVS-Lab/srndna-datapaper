@@ -28,11 +28,12 @@
       "CodeURL": "https://github.com/DVS-Lab/srndna-datapaper/tree/fd86b28/stimuli"
     }
   ],
-  "HowToAcknowledge": "Please cite the Scientific Data descriptor and relevant task-specific publications listed in ReferencesAndLinks.",
+  "HowToAcknowledge": "If using this dataset, please cite the following papers: 1) Fareri et al., 2022, NeuroImage (https://doi.org/10.1016/j.neuroimage.2022.119267); 2) Smith et al., 2024, Scientific Data (https://doi.org/10.1038/s41597-024-02931-y); 3) Fareri et al., 2026, bioRxiv (https://doi.org/10.1101/2025.08.13.670194).",
   "License": "CC0-1.0",
   "Name": "Social Reward Processing and Decision Making in Younger and Older Adults",
   "ReferencesAndLinks": [
     "Smith, D. V., Ludwig, R. M., Dennison, J. B., Reeck, C., & Fareri, D. S. (2024). An fMRI Dataset on Social Reward Processing and Decision Making in Younger and Older Adults. Scientific Data, 11, 158. https://doi.org/10.1038/s41597-024-02931-y",
-    "Fareri, D. S., Hackett, K., Tepfer, L. J., Kelly, V., Henninger, N., Reeck, C., Giovannetti, T., Smith, D.V. (2022). Age-related differences in ventral striatal and default mode network function during reciprocated trust. NeuroImage, 256, 119267. doi: https://doi.org/10.1016/j.neuroimage.2022.119267"
+    "Fareri, D. S., Hackett, K., Tepfer, L. J., Kelly, V., Henninger, N., Reeck, C., Giovannetti, T., Smith, D.V. (2022). Age-related differences in ventral striatal and default mode network function during reciprocated trust. NeuroImage, 256, 119267. doi: https://doi.org/10.1016/j.neuroimage.2022.119267",
+    "Fareri, D. S., Yang, Y., Ludwig, R. M., Wyngaarden, J. B., III, Dwamena, D., Hackett, K., Giovannetti, T., & Smith, D. V. (2026). Older Adults Show Altered Default Mode and Executive Control Network Connectivity during Fairness Decisions. bioRxiv. https://doi.org/10.1101/2025.08.13.670194"
   ]
 }
