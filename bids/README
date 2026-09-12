@@ -1,10 +1,41 @@
-# Data
+# Summary
 
-This BIDS dataset contains neuroimaging and behavioral data from the Social
-Reward and Decision Neuroscience in Aging study.
+This dataset is a pilot study supported by the Scientific Research Network on
+Decision Neuroscience and Aging. The full dataset is described in a published
+Scientific Data article (https://doi.org/10.1038/s41597-024-02931-y).
 
-Partner ratings that were collected before or after the Trust, Shared Reward,
-and Ultimatum tasks are stored as subject-level behavioral recordings under
-`sub-*/beh/`. The `acq-pre` and `acq-post` entities indicate collection timing.
-When an acquisition was repeated, the final complete attempt is the version of
-record. Missing ratings were not imputed.
+# Abstract
+
+Behavioural and neuroimaging research has shown that older adults are less
+sensitive to financial losses compared with younger adults. Yet relatively
+less is known about age-related differences in social decisions and social
+reward processing. We collected behavioural and functional magnetic resonance
+imaging (fMRI) data from 50 participants (younger: N = 26, ages 18–34 years;
+older: N = 24, ages 63–80 years) who completed three tasks in the scanner: an
+economic trust game as the investor with three partners (computer, stranger,
+friend) as the investee; a card-guessing task in which monetary gains and
+losses were shared with three partners (computer, stranger, friend); and an
+ultimatum game as responder to three anonymous proposers (computer,
+age-similar adults, age-dissimilar adults). We also collected B0 field maps and
+high-resolution structural images (T1-weighted and T2-weighted images). These
+data could be reused to answer questions about moment-to-moment variability in
+fMRI signal, representational similarity between tasks, and brain structure.
+
+# Additional Usage Notes
+
+* `sub-2xx` participants do not have imaging data because these individuals
+  were the friends of the respective `sub-1xx` participants. For example,
+  `sub-204` was the participant outside the scanner playing the role of the
+  investee while `sub-104` was the participant inside the scanner playing the
+  role of the investor.
+* Task-linked partner ratings are stored as untimed BIDS behavioral recordings
+  under `sub-*/beh/`. The `acq-pre` and `acq-post` entities indicate collection
+  timing. When an acquisition was repeated, the final complete attempt is the
+  version of record. Missing ratings were not imputed.
+* The `derivatives` folder contains fMRIPrep and MRIQC outputs, single-trial
+  estimates, and temporal signal-to-noise ratio (tSNR) images.
+* All code related to this dataset is available at
+  https://github.com/DVS-Lab/srndna-datapaper. This includes source data for
+  the scanner tasks and stimulus-presentation scripts.
+* For convenience, the `code` and `stimuli` subfolders of the GitHub repository
+  have been copied to this dataset.
