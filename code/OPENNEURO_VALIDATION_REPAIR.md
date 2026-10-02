@@ -108,3 +108,49 @@ Subject-wide historical preprocessing reports may mention the excluded runs;
 
 Keep the full backup outside the public release and retain earlier published
 snapshots. Publish only after validating and checking the actual remote draft.
+
+## Second pass: gzip privacy headers and sequence descriptions
+
+`clean_openneuro_warnings.py` previews by default. It requires the repaired
+complete download (418 BOLD files, 668 raw images). It removes outer gzip
+timestamps, original filenames and comments while preserving the compressed
+deflate stream and verifying SHA-256 of every decompressed byte, including the
+NIfTI header. It refuses unsupported header flags, corrupt/truncated streams
+and multiple gzip members. See [RFC 1952](https://www.rfc-editor.org/rfc/rfc1952).
+
+The script also adds a general `PulseSequenceType` only when the existing
+vendor `PulseSequenceDetails` and DICOM `ScanningSequence` agree with one of
+four explicitly supported combinations. It does not infer coil reconstruction,
+gradient correction, missing slice timing or task ontology identifiers.
+
+```bash
+python3 code/clean_openneuro_warnings.py --dataset-root "$DATASET_ROOT"
+python3 -u code/clean_openneuro_warnings.py \
+  --dataset-root "$DATASET_ROOT" \
+  --backup-root /ZPOOL/data/scratch/srndna-datapaper-warning-cleanup-v1 \
+  --apply
+```
+
+Run in tmux. Allow at least 25 GB of additional free space for this dataset's
+raw-image backups plus working space. Every affected original is backed up and
+checksum-verified before replacing the first file. Replacements are atomic;
+hard-linked earlier staging copies are unchanged. An interrupted run resumes
+with the same command plus `--resume`. Keep `cleanup-manifest.json` and
+`originals/`; do not delete an existing backup to restart. The manifest records
+before/after compressed hashes and decompressed hashes for the images.
+
+Validate again into a fresh report directory using
+`validate_openneuro_full_dataset.py`, then inspect all issue groups with
+`summarize_bids_validation.py REPORT/validation.json`. No warnings are hidden
+or downgraded. Based on the first report, 768 gzip-header warning instances and
+668 missing sequence-description instances should disappear; approximately
+3,602 warning instances will remain pending verification. Most are repeated
+recommended metadata fields, not thousands of independent data defects.
+
+The participant audit in `cleanup-manifest.json` lists actual root directories
+not represented in `participants.tsv`, but does not move or remove them.
+Remaining recommendations must be reviewed for applicability and available
+source evidence; never fill unknown acquisition parameters merely to silence
+the validator. This operation makes no OpenNeuro changes. The changed gzip
+files have new compressed checksums and will need remote replacement even
+though the image contents are identical. Single-trial estimates are untouched.
