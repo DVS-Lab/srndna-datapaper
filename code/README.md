@@ -149,6 +149,11 @@ than participant-level phenotype summaries.
 
 ## OpenNeuro 2.2.0 release staging
 
+**For the current draft's validator errors and two unsupported Trust runs, use
+[the validation-repair instructions](OPENNEURO_VALIDATION_REPAIR.md) first.**
+Those instructions operate on the complete download, preserve external backups,
+and keep remote deletions separate from sparse uploads.
+
 `prepare_openneuro_2_2_release.py` builds a sparse, checksum-inventoried upload
 tree containing only the 2.2.0 changes. It requires exactly 220 rating TSVs,
 218 regenerated Trust single-trial images, four regenerated sub-144

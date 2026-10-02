@@ -1,6 +1,7 @@
 import csv
 import collections
 import importlib.util
+import json
 import subprocess
 import sys
 import tempfile
@@ -23,6 +24,21 @@ def touch(path: Path, content: bytes = b"test\n") -> None:
 
 
 class PrepareOpenNeuroReleaseTests(unittest.TestCase):
+    def test_release_explicitly_declares_raw_dataset(self):
+        # The schema validator otherwise infers derivative from GeneratedBy.
+        description = json.loads((ROOT / "bids/dataset_description.json").read_text())
+        self.assertEqual(description["DatasetType"], "raw")
+        self.assertTrue(description["GeneratedBy"])
+
+    def test_event_presentation_rrids_use_schema_prefix(self):
+        # OpenNeuro's schema-1.2.7 uses the format pattern RRID:.+_.+.
+        for relative in MODULE.EVENT_SIDECARS:
+            with self.subTest(sidecar=relative):
+                sidecar = json.loads((ROOT / "bids" / relative).read_text())
+                rrid = sidecar["StimulusPresentation"]["SoftwareRRID"]
+                self.assertEqual(rrid, "RRID:SCR_006571")
+                self.assertRegex(rrid, r"^RRID:.+_.+$")
+
     def make_fixture(self, root: Path):
         repo = root / "repo"
         dataset = root / "dataset"

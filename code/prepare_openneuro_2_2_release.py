@@ -356,6 +356,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     for category in sorted(counts):
         print(f"  {category}: {counts[category]}")
     print("PASS: event files are restricted to the four sub-144 repairs")
+    print("NOT a full-dataset validation: validate the complete repaired dataset separately.")
+    print("Sparse staging does not apply exclusions remotely; see code/OPENNEURO_VALIDATION_REPAIR.md.")
     print(f"Staging root: {staging_root}")
     print(f"Manifest: {manifest}")
     print("Upload without --delete so all other remote dataset files are preserved.")
