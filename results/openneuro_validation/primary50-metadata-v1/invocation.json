@@ -1,0 +1,36 @@
+{
+  "dataset_root": "/ZPOOL/data/datasets/ds003745-work",
+  "started": "2026-10-05T20:10:10.462746+00:00",
+  "openneuro_profile": "v5.8.0",
+  "validator_version": "3.0.1",
+  "assets": {
+    "validator-config.json": {
+      "url": "https://raw.githubusercontent.com/OpenNeuroOrg/openneuro/v5.8.0/services/datalad/datalad_service/tasks/assets/validator-config.json",
+      "sha256": "fda12077dd8d6591e755318cb554abb7b98cedd9e2abeec88c4d037e0349807f"
+    },
+    "schema-1.2.7-datacite.json": {
+      "url": "https://raw.githubusercontent.com/OpenNeuroOrg/openneuro/v5.8.0/services/datalad/datalad_service/tasks/assets/schema-1.2.7-datacite.json",
+      "sha256": "074bdac7577b0f68010eff955df1a713e392dc0306e8f9bac217ac7f309fc910"
+    }
+  },
+  "command": [
+    "/home/tug87422@tu.temple.edu/.deno/bin/deno",
+    "run",
+    "-A",
+    "jsr:@bids/validator@3.0.1",
+    "--config",
+    "/ZPOOL/data/projects/srndna-datapaper-code/results/openneuro_validation/primary50-metadata-v1/validator-config.json",
+    "--json",
+    "--blacklistModalities",
+    "micr",
+    "--datasetTypes",
+    "raw,derivative",
+    "--schema",
+    "file:///ZPOOL/data/projects/srndna-datapaper-code/results/openneuro_validation/primary50-metadata-v1/schema-1.2.7-datacite.json",
+    "/ZPOOL/data/datasets/ds003745-work"
+  ],
+  "deno_version": "deno 2.9.6 (stable, release, x86_64-unknown-linux-gnu)\nv8 15.0.245.2-rusty\ntypescript 6.0.3\n",
+  "raw_bold_files": 418,
+  "exit_status": 0,
+  "finished": "2026-10-05T20:10:16.223081+00:00"
+}
