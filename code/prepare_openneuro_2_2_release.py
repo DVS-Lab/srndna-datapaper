@@ -13,6 +13,7 @@ import argparse
 import csv
 import hashlib
 import os
+import re
 import shutil
 import tempfile
 from dataclasses import dataclass
@@ -160,6 +161,14 @@ def make_release_plan(
     expected_ratings: int = 220,
     expected_trust_images: int = 218,
 ) -> list[ReleaseFile]:
+    # Auxiliary friends are intentionally excluded from this primary release.
+    participants = read_tsv(repo_root / "bids/participants.tsv")
+    ids = [row["participant_id"] for row in participants]
+    if len(ids) != 50 or len(set(ids)) != 50 or any(not re.fullmatch(r"sub-1[0-9]{2}", p) for p in ids):
+        raise ValueError("primary release requires exactly 50 unique sub-1xx participants")
+    ignored = (repo_root / "bids/.bidsignore").read_text().splitlines()
+    if "sub-2*" not in [line.strip() for line in ignored]:
+        raise ValueError("primary release must retain the sub-2* exclusion")
     plan: list[ReleaseFile] = []
     add_repo_files(plan, repo_root, ROOT_METADATA, "root_metadata")
     add_repo_files(plan, repo_root, BEHAVIOR_SIDECARS, "behavior_sidecar")
@@ -178,6 +187,8 @@ def make_release_plan(
     if any(row.get("participant_id") == "sub-143" for row in rating_rows):
         raise ValueError("ratings manifest unexpectedly contains sub-143")
     for row in rating_rows:
+        if row["participant_id"] not in ids:
+            raise ValueError("rating participant is outside the primary 50-participant sample")
         relative = Path(row["destination"])
         if relative.is_absolute() or ".." in relative.parts:
             raise ValueError(f"unsafe rating destination: {relative}")
@@ -225,6 +236,8 @@ def make_release_plan(
         )
 
     destinations = [item.destination.as_posix() for item in plan]
+    if any(path.startswith(("sub-2", "supplementary/")) or "acq-game" in path for path in destinations):
+        raise ValueError("auxiliary friend export unexpectedly included in primary release")
     if len(destinations) != len(set(destinations)):
         duplicates = sorted(
             path for path in set(destinations) if destinations.count(path) > 1

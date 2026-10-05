@@ -43,6 +43,7 @@
   "SpacingBetweenSlices": 3.22,
   "StationName": "AWP166048",
   "TaskName": "sharedreward",
-  "TaskDescription": "Participants guessed whether a card value was lower or higher than five while sharing monetary outcomes with a friend, an unfamiliar human partner, or a computer.",
+  "TaskDescription": "Social-sharing adaptation of the Delgado card-guessing paradigm, following the Fareri social-reward extension. Participants guessed whether a card value was lower or higher than five while sharing monetary outcomes with a friend, an unfamiliar human partner, or a computer. The Cognitive Atlas identifier describes the parent card-guessing paradigm, not the added partner manipulation or identical monetary stakes.",
+  "CogAtlasID": "https://www.cognitiveatlas.org/task/id/trm_550b5c1a7f4db/",
   "Instructions": "Press button 2 to guess lower than five or button 3 to guess higher than five. Correct guesses gain 10 dollars and incorrect guesses lose 5 dollars, shared with the displayed partner.",
   "TotalReadoutTime": 0.0357695}

@@ -52,6 +52,8 @@ class PrepareOpenNeuroReleaseTests(unittest.TestCase):
             touch(repo / "bids" / relative)
         for relative in MODULE.EVENT_REPAIRS:
             touch(repo / "bids" / relative)
+        touch(repo / "bids/participants.tsv", ("participant_id\n" + "".join(f"sub-{n}\n" for n in range(104, 154))).encode())
+        touch(repo / "bids/.bidsignore", b"derivatives\nsub-2*\ncode\n")
         for relative in MODULE.REPRODUCIBILITY_FILES:
             touch(repo / relative)
         rating = repo / "bids/sub-104/beh/sub-104_task-trust_acq-pre_beh.tsv"
@@ -108,6 +110,28 @@ class PrepareOpenNeuroReleaseTests(unittest.TestCase):
             staging.mkdir()
             with self.assertRaises(FileExistsError):
                 MODULE.materialize(plan, staging, copy_large_files=True)
+
+    def test_primary_scope_does_not_depend_on_friend_audit(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            repo, dataset = self.make_fixture(Path(temporary))
+            touch(repo / "results/friend_behavior/summary.json", b'{"unresolved_runs":11}\n')
+            plan = MODULE.make_release_plan(repo, dataset, expected_ratings=1, expected_trust_images=2)
+            self.assertFalse(any("friend_behavior" in str(f.source) or str(f.destination).startswith("sub-2") for f in plan))
+
+    def test_rejects_expanded_participant_inventory(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            repo, dataset = self.make_fixture(Path(temporary))
+            path = repo / "bids/participants.tsv"
+            path.write_text(path.read_text() + "sub-204\n")
+            with self.assertRaisesRegex(ValueError, "exactly 50"):
+                MODULE.make_release_plan(repo, dataset, expected_ratings=1, expected_trust_images=2)
+
+    def test_rejects_unignored_friends(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            repo, dataset = self.make_fixture(Path(temporary))
+            (repo / "bids/.bidsignore").write_text("derivatives\n")
+            with self.assertRaisesRegex(ValueError, "sub-2"):
+                MODULE.make_release_plan(repo, dataset, expected_ratings=1, expected_trust_images=2)
 
     def test_materialization_checks_rating_checksum(self):
         with tempfile.TemporaryDirectory() as temporary:

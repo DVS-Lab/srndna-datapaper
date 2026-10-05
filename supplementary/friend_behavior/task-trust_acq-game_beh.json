@@ -1,0 +1,25 @@
+{
+  "TaskName": "trust",
+  "TaskDescription": "Trial-level Trust game performed outside the scanner. One row per source trial, including missed responses. These recordings are task choices, not the pre/post partner ratings.",
+  "CogAtlasID": "https://www.cognitiveatlas.org/task/id/tsk_uzol7erTzr9Ix",
+  "Instructions": "Select one of the displayed investment amounts using the response controls.",
+  "AcquisitionLabels": {"game": "Behavioral-only game, not partner ratings"},
+  "AcquisitionSelectionRule": "Only unambiguous single-acquisition source logs are exported automatically. Repeated acquisitions and exact cross-owner copies require identity review.",
+  "trial_number": {"Description": "One-based recorded trial order within the run."},
+  "partner": {
+    "Description": "Partner condition recorded by the presentation script.",
+    "Levels": {"computer": "Computer", "stranger": "Unfamiliar person", "friend": "Friend"}
+  },
+  "response": {"Description": "Recorded response button (2 or 3); n/a for a missed response. See investment and choice for the selected option."},
+  "response_time": {"Description": "Response latency recorded in the source log; n/a for missed responses.", "Units": "s"},
+  "response_recorded": {"Description": "Whether a choice was recorded.", "Levels": {"true": "Recorded choice", "false": "Missed response"}},
+  "decision_onset_time": {"Description": "Source choice-onset timestamp relative to the PsychoPy run clock. Not an MRI acquisition timestamp.", "Units": "s"},
+  "response_onset_time": {"Description": "Source response timestamp relative to the run clock; n/a for missed responses.", "Units": "s"},
+  "investment": {"Description": "Selected investment from the eight-dollar endowment; zero is a valid choice, n/a means missed response.", "Units": "USD"},
+  "choice": {"Description": "Selected option relative to the two displayed amounts.", "Levels": {"high": "Larger amount", "low": "Smaller amount"}},
+  "left_option": {"Description": "Investment amount offered on the left.", "Units": "USD"},
+  "right_option": {"Description": "Investment amount offered on the right.", "Units": "USD"},
+  "reciprocate": {"Description": "Scheduled reciprocity condition, retained even if the participant did not invest or respond. Does not establish that an outcome was displayed.", "Levels": {"0": "No reciprocation scheduled", "1": "Reciprocation scheduled"}},
+  "outcome_onset_time": {"Description": "Outcome-onset timestamp as recorded by the source script, relative to the run clock. Missing sentinels become n/a; timestamps are not reconstructed.", "Units": "s"},
+  "outcome_offset_time": {"Description": "Outcome-offset timestamp as recorded by the source script, relative to the run clock.", "Units": "s"}
+}

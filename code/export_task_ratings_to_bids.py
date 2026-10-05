@@ -46,7 +46,6 @@ TASK_METADATA = {
     "ultimatum": {
         "TaskName": "ultimatum",
         "TaskDescription": "Ratings of partners in the Ultimatum Game task.",
-        "CogAtlasID": "https://www.cognitiveatlas.org/task/id/trm_553e8882e3cb6/",
         "Instructions": (
             "Use the button box to rate each partner. Before the task, rate "
             "partner fairness and likeability; after the task, also rate anger "
@@ -69,7 +68,6 @@ TASK_METADATA = {
     "trust": {
         "TaskName": "trust",
         "TaskDescription": "Ratings of partners in the Trust task.",
-        "CogAtlasID": "https://www.cognitiveatlas.org/task/id/tsk_uzol7erTzr9Ix",
         "Instructions": (
             "Use the response controls to rate how trustworthy, likeable, and "
             "approachable each partner appears before and after the task."
@@ -172,7 +170,10 @@ def complete_attempt(rows: list[dict[str, str]]) -> bool:
 
 
 def select_versions(rows: list[dict[str, str]]) -> list[dict[str, object]]:
-    included = [row for row in rows if row["included_in_participants"] == "true"]
+    # Guard the established imaging-participant ratings release scope;
+    # auxiliary friends must not enter it if an input inventory changes.
+    included = [row for row in rows if row["included_in_participants"] == "true"
+                and row["participant_id"].startswith("sub-1")]
     grouped: defaultdict[tuple[str, str, str], list[dict[str, str]]] = defaultdict(list)
     for row in included:
         key = (row["participant_id"], row["task"], row["timepoint"])

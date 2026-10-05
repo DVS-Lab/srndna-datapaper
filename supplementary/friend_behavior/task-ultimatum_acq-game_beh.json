@@ -1,0 +1,23 @@
+{
+  "TaskName": "ultimatum",
+  "TaskDescription": "Trial-level Ultimatum game performed outside the scanner. One row per source trial, including missed responses. No duplicated block, condition or RT modeling rows. These recordings are task choices, not the pre/post partner ratings.",
+  "CogAtlasID": "https://www.cognitiveatlas.org/task/id/trm_553e8882e3cb6/",
+  "Instructions": "Accept or reject the displayed monetary offer using the response controls.",
+  "AcquisitionLabels": {"game": "Behavioral-only game, not partner ratings"},
+  "AcquisitionSelectionRule": "Only unambiguous single-acquisition source logs are exported automatically. Repeated acquisitions and exact cross-owner copies require identity review.",
+  "trial_number": {"Description": "One-based recorded trial order within the run."},
+  "partner": {
+    "Description": "Partner condition from source codes 1, 2 and 3, following the historical converter. Similar/dissimilar are task-relative labels; no participant age is inferred.",
+    "Levels": {"computer": "Computer (1)", "similar": "Age-similar human condition (2)", "dissimilar": "Age-dissimilar human condition (3)"}
+  },
+  "response": {"Description": "Recorded accept/reject choice; n/a for a missed response.", "Levels": {"accept": "Accepted (source button 3)", "reject": "Rejected (source button 2)"}},
+  "response_time": {"Description": "Response latency recorded in the source log; n/a for missed responses. Includes block-first trials.", "Units": "s"},
+  "response_recorded": {"Description": "Whether a choice was recorded.", "Levels": {"true": "Recorded choice", "false": "Missed response"}},
+  "decision_onset_time": {"Description": "Decision-onset timestamp relative to the PsychoPy run clock. Not an MRI acquisition timestamp.", "Units": "s"},
+  "response_onset_time": {"Description": "Response timestamp relative to the run clock; n/a for missed responses.", "Units": "s"},
+  "offer": {"Description": "Amount offered to the participant from the twenty-dollar allocation.", "Units": "USD"},
+  "is_fair_block": {"Description": "Scheduled offer-distribution block, not a classification of the individual offer.", "Levels": {"0": "Unfair block", "1": "Fair block"}},
+  "block_number": {"Description": "One-based source block number."},
+  "decision_offset_time": {"Description": "Source decision_offset timestamp relative to the run clock; not necessarily the end of the entire trial.", "Units": "s"},
+  "trial_duration": {"Description": "Source trialDuration, including post-response display or missed-response feedback where present. Not RT.", "Units": "s"}
+}

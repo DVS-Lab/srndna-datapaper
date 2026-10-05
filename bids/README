@@ -28,6 +28,15 @@ fMRI signal, representational similarity between tasks, and brain structure.
   `sub-204` was the participant outside the scanner playing the role of the
   investee while `sub-104` was the participant inside the scanner playing the
   role of the investor.
+* The primary dataset and `participants.tsv` contain **50 imaging participants**.
+  Legacy `sub-2xx` records are auxiliary data and remain excluded by
+  `.bidsignore`; they are not additional members of the primary sample.
+  Their demographics and acquisition documentation are unavailable or
+  incomplete. Some source files contain repeated acquisitions or identical
+  records under different identifiers. These records require independent
+  evaluation before analysis. Supplementary exports and an unresolved-source
+  inventory are maintained separately in the code repository, not in the
+  primary BIDS release. See `code/FRIEND_BEHAVIOR_EXPORT.md` in that repository.
 * Task-linked partner ratings are stored as untimed BIDS behavioral recordings
   under `sub-*/beh/`. The `acq-pre` and `acq-post` entities indicate collection
   timing. When an acquisition was repeated, the final complete attempt is the
@@ -39,6 +48,10 @@ fMRI signal, representational similarity between tasks, and brain structure.
   the scanner tasks and stimulus-presentation scripts.
 * For convenience, the `code` and `stimuli` subfolders of the GitHub repository
   have been copied to this dataset.
+* Partial-Fourier acquisition was not used. `PartialFourier: 1` is retained;
+  no partial-Fourier direction applies. Ontology links describe the associated
+  game paradigms, not the separate partner-rating recordings. CogPO IDs are
+  omitted where a matching definition has not been verified.
 
 # How to Acknowledge
 

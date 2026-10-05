@@ -117,7 +117,7 @@ def make_plan(root: Path, repository_root: Path | None = None) -> list[Change]:
     if repository_root is not None:
         # The downloaded tree may predate metadata/ratings that were only added
         # to the sparse upload. Validate the complete candidate release, not
-        # the old download. Reuse its guarded 487-file release contract.
+        # the old download. Reuse the primary 50-participant release contract.
         from prepare_openneuro_2_2_release import make_release_plan
         for item in make_release_plan(repository_root.resolve(), root):
             if not item.category.startswith("single_trial"):

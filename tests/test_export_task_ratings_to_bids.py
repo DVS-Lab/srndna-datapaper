@@ -51,6 +51,12 @@ def write_normalized(path, rows):
 
 
 class ExportTaskRatingsToBidsTests(unittest.TestCase):
+    def test_friend_inventory_does_not_expand_ratings_scope(self):
+        rows = normalized_rows("trust", "pre", 1, 1)
+        for row in rows:
+            row["participant_id"] = "sub-204"
+        self.assertEqual(MODULE.select_versions(rows), [])
+
     def test_final_complete_attempt_is_exported(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -110,10 +116,7 @@ class ExportTaskRatingsToBidsTests(unittest.TestCase):
                     sidecar["InstitutionalDepartmentName"],
                     "Department of Psychology",
                 )
-                if task in {"trust", "ultimatum"}:
-                    self.assertTrue(sidecar["CogAtlasID"].startswith("https://"))
-                else:
-                    self.assertNotIn("CogAtlasID", sidecar)
+                self.assertNotIn("CogAtlasID", sidecar)
                 self.assertIn("AcquisitionSelectionRule", sidecar)
                 self.assertEqual(
                     {"trial_number", "partner", "rating_dimension", "response"},
