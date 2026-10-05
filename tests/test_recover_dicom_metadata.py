@@ -96,6 +96,37 @@ class Recovery(unittest.TestCase):
             self.assertFalse(M.matches(self.old, altered), key)
         self.assertTrue(M.matches(self.old, dict(self.new, ImageType=self.old["ImageType"] + ["MAGNITUDE"])))
 
+    def test_scanning_sequence_representation_only(self):
+        old = dict(self.old, ScanningSequence="GR_IR")
+        new = dict(self.new, ScanningSequence="GR\\IR")
+        self.assertTrue(M.matches(old, new))
+        self.assertTrue(M.matches(new, old))
+        for value in ("GR", "IR", "SE", "EP", "IR_GR", "GR/IR", "GR_IR_OTHER"):
+            self.assertFalse(M.matches(old, dict(new, ScanningSequence=value)))
+        self.assertFalse(M.matches(old, dict(new, ProtocolName="different")))
+        self.assertFalse(M.matching_equal("ProtocolName", "GR_IR", "GR\\IR"))
+        self.old, self.new = old, new
+        self.sidecar.write_bytes(M.json_bytes(old)); self.save_source()
+        summary, plan, public = self.plan()
+        self.assertEqual(summary["matched"], 1)
+        self.assertIn("ScanningSequence:GR_IR=GR\\IR", (public / "matching.tsv").read_text())
+        M.apply(self.root, plan, self.base / "backup")
+        self.assertEqual(json.loads(self.sidecar.read_text())["ScanningSequence"], "GR_IR")
+
+    def test_require_complete_stops_after_saving_unmatched_audit(self):
+        self.new["ScanningSequence"] = "EP"; self.save_source()
+        argv = ["recover", "plan", "--dataset-root", str(self.root),
+                "--work-root", str(self.work), "--report-root", str(self.base / "report"),
+                "--public-report", str(self.base / "public"), "--require-complete"]
+        previous = os.umask(0o077)
+        try:
+            with patch.object(sys, "argv", argv):
+                self.assertEqual(M.main(), 2)
+        finally:
+            os.umask(previous)
+        self.assertTrue((self.base / "public/summary.json").is_file())
+        self.assertEqual(json.loads(self.sidecar.read_text()), self.old)
+
     def test_duplicate_and_unmatched_are_held(self):
         twin = self.folder / "series-7_echo-1a.json"
         twin.write_bytes(self.source.read_bytes()); self.save_source()

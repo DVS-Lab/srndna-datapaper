@@ -36,6 +36,17 @@ agree. Neither series number alone nor nearest timing is accepted. Ambiguous
 or unmatched scans and conflicting existing metadata are held for review.
 Inherited BIDS metadata is respected and fingerprinted too.
 
+The first complete recovery audit matched 618/668 scans and all 150 fieldmap
+timing arrays. The only mismatch for the remaining 50 T1 scans was
+`ScanningSequence`. Stored sidecars use `GR_IR`; recovered pilot conversions
+use `GR\IR`. The matcher now treats only these two representations of the
+same GR+IR sequence as equivalent, records that comparison in the public
+audit, and leaves the stored field unchanged. All other identity checks still
+apply. [DICOM defines ScanningSequence as multi-valued](https://dicom.nema.org/medical/dicom/current/output/chtml/part03/sect_C.8.3.html).
+Re-plan from existing extractions into `plan-v2` and a new public report; do not
+repeat extraction. Use `--require-complete` to stop a command chain if any
+selected scan remains unmatched, ambiguous or conflicting.
+
 ## Linux1: extract and preview
 
 Run inside tmux. This is sequential, with internal gzip compression and one

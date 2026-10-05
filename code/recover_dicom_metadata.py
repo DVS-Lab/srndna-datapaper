@@ -174,11 +174,20 @@ def image_type(data):
     return result
 
 
+def matching_equal(field, a, b):
+    # One observed converter representation difference, NOT a relaxed sequence
+    # identity check. DICOM ScanningSequence is multi-valued (GR + IR here).
+    # Preserve both original JSON strings; normalize only for comparison.
+    if field == "ScanningSequence" and a in ("GR_IR", "GR\\IR") and b in ("GR_IR", "GR\\IR"):
+        return True
+    return equal(a, b)
+
+
 def matches(old, new):
     if not image_type(old) or image_type(old) != image_type(new):
         return False
     for field in REQUIRED_MATCH:
-        if field not in old or field not in new or not equal(old[field], new[field]):
+        if field not in old or field not in new or not matching_equal(field, old[field], new[field]):
             return False
     for field in OPTIONAL_MATCH:
         if field in old and field in new and not equal(old[field], new[field]):
@@ -255,7 +264,7 @@ def mismatch_fields(old, source_list):
         for field in REQUIRED_MATCH + OPTIONAL_MATCH:
             if field in REQUIRED_MATCH and (field not in old or field not in new):
                 reasons.add(field + ":missing")
-            elif field in old and field in new and not equal(old[field], new[field]):
+            elif field in old and field in new and not matching_equal(field, old[field], new[field]):
                 reasons.add(field + ":different")
         if image_type(old) != image_type(new):
             reasons.add("ImageType:different")
@@ -342,9 +351,12 @@ def make_plan(root, work, report, public_report, selected=None):
         hits = [(p, d) for p, d in sources[subject] if matches(old, d)]
         row = dict(path=sidecar.relative_to(root).as_posix(), candidates=len(hits),
                    status="unmatched" if not hits else "ambiguous", added="", conflicts="", timing="not_matched",
-                   unmatched_fields=mismatch_fields(old, sources[subject]) if not hits else "")
+                   unmatched_fields=mismatch_fields(old, sources[subject]) if not hits else "",
+                   representation_normalized="")
         if len(hits) == 1:
             source, new = hits[0]
+            if old["ScanningSequence"] != new["ScanningSequence"]:
+                row["representation_normalized"] = "ScanningSequence:GR_IR=GR\\IR"
             additions, conflicts = {}, []
             for key in COPY_FIELDS:
                 if key in new:
@@ -489,6 +501,8 @@ def main():
     q.add_argument("--report-root", type=Path, required=True)
     q.add_argument("--public-report", type=Path, required=True)
     q.add_argument("--subjects", nargs="+")
+    q.add_argument("--require-complete", action="store_true",
+                   help="exit nonzero after writing audit if any selected image is unmatched, ambiguous or conflicting")
     a = sub.add_parser("apply")
     a.add_argument("--patch", type=Path, required=True)
     a.add_argument("--backup-root", type=Path, required=True)
@@ -509,7 +523,10 @@ def main():
                     raise ValueError("another extraction is running for this work root") from exc
                 extract(root, args.dicom_root.resolve(), work, args.subjects, args.with_images)
         elif args.command == "plan":
-            make_plan(root, args.work_root.resolve(), args.report_root.resolve(), args.public_report.resolve(), args.subjects)
+            summary = make_plan(root, args.work_root.resolve(), args.report_root.resolve(), args.public_report.resolve(), args.subjects)
+            if args.require_complete and summary["matched"] != summary["images_audited"]:
+                print("STOP: incomplete matching; audit saved, no BIDS changes. Do not chain application.")
+                return 2
         else:
             apply(root, args.patch.resolve(), args.backup_root.resolve())
     except (ValueError, OSError, KeyError, TypeError) as exc:
