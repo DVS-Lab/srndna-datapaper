@@ -154,3 +154,12 @@ source evidence; never fill unknown acquisition parameters merely to silence
 the validator. This operation makes no OpenNeuro changes. The changed gzip
 files have new compressed checksums and will need remote replacement even
 though the image contents are identical. Single-trial estimates are untouched.
+
+## Third pass: recovered DICOM metadata
+
+The completed second-pass report is committed in
+`results/openneuro_validation/cleanup_v1` (0 errors; 3,602 warning instances).
+Use [DICOM_METADATA_RECOVERY.md](DICOM_METADATA_RECOVERY.md) for private,
+resumable extraction, strict scan matching, geometry-checked slice timing,
+missing-only JSON patches and a backed-up application step. That workflow
+does not suppress the remaining recommendations or update OpenNeuro itself.
