@@ -1,0 +1,17 @@
+{
+  "images_audited": 668,
+  "matched": 618,
+  "unmatched": 50,
+  "ambiguous": 0,
+  "conflict": 0,
+  "proposed_sidecars": 618,
+  "proposed_fields": {
+    "CoilCombinationMethod": 618,
+    "MatrixCoilMode": 618,
+    "NonlinearGradientCorrection": 618,
+    "SliceEncodingDirection": 0,
+    "SliceTiming": 150
+  },
+  "dataset_modified": false,
+  "no_remote_operations": true
+}
