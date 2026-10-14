@@ -1,0 +1,14 @@
+{
+  "source": "https://github.com/OpenNeuroDatasets/ds003745/blob/2.1.1/dataset_description.json",
+  "base": "a65a5d24b5c4bbbf072ac055d9cbc6578692e024",
+  "changed_fields": [
+    "EthicsApprovals",
+    "Acknowledgements",
+    "Authors"
+  ],
+  "image_files_transferred": 0,
+  "snapshot_published": false,
+  "commit": "d8a9b8164afc560aeda4e54fabceed062883518c",
+  "remote_main_verified": true,
+  "local_download_corrected": true
+}
