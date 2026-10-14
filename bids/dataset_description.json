@@ -1,15 +1,18 @@
 {
-  "Acknowledgements": "This work was supported, in part, by grants from the National Institutes of Health (R21-MH113917, R03-DA046733, and RF1-AG067011 to DVS and R15-MH122927 to DSF) and a Pilot Grant from the Scientific Research Network on Decision Neuroscience and Aging [to DVS; Subaward of NIH R24-AG054355 (PI Gregory Samanez-Larkin)]. We thank Elizabeth Beard for assistance with task coding, Victoria Kelly, Katherine Hackett, Dennis Desalme, Ben Muzekari, Isaac Levy, Gemma Goldstein, and Srikar Katta for assistance with participant recruitment and data collection. DVS was a Research Fellow of the Public Policy Lab at Temple University during the curation of this dataset (2019-2020 academic year).",
+  "Acknowledgements": "This work was supported, in part, by grants from the National Institutes of Health (R21-MH113917, R03-DA046733, and RF1-AG067011 to DVS and R15-MH122927 to DSF) and a Pilot Grant from the Scientific Research Network on Decision Neuroscience and Aging [to DVS; Subaward of NIH R24-AG054355 (PI Gregory Samanez-Larkin)]. We thank Tania Giovannetti for assistance with funding acquisition, development and implementation of study procedures, and recruitment of older adults. We also thank Elizabeth Beard for assistance with task coding, Victoria Kelly, Nicole Henninger, Katherine Hackett, Dennis Desalme, Ben Muzekari, Isaac Levy, Gemma Goldstein, and Srikar Katta for assistance with participant recruitment and data collection. DVS was a Research Fellow of the Public Policy Lab at Temple University during the curation of this dataset (2019-2020 academic year).",
   "Authors": [
     "David V. Smith",
-    "Rita Ludwig",
-    "Jeffrey Dennison",
+    "Rita M. Ludwig",
+    "Jeffrey B. Dennison",
     "Crystal Reeck",
-    "Dominic Fareri"
+    "Dominic S. Fareri"
   ],
   "BIDSVersion": "1.4.1",
   "DatasetType": "raw",
   "DatasetDOI": "doi:10.18112/openneuro.ds003745.v2.2.0",
+  "EthicsApprovals": [
+    "Temple IRB #24452"
+  ],
   "Funding": [
     "Pilot Grant from Scientific Research Network on Decision Neuroscience and Aging (awarded to DVS; subaward of NIH R24-AG054355, PI Gregory Samanez-Larkin)",
     "NIH RF1-AG067011 (awarded to DVS)",

@@ -102,3 +102,25 @@ successful Git push is not presented as successful server-side validation.
 
 References: [OpenNeuro Git/annex workflow](https://docs.openneuro.org/git),
 [validator 3.0.1 subject context](https://jsr.io/@bids/validator/3.0.1/src/schema/context.ts).
+
+## Metadata-only follow-up after successful upload
+
+The consolidated upload completed at `a65a5d24b5`. Its older source description
+omitted EthicsApprovals and used older acknowledgments and shortened author
+names. The repository now restores these three fields from published 2.1.1
+(trimming the trailing space after `Temple IRB #24452`). No other fields change.
+
+Run `python3 code/restore_openneuro_approval_metadata.py` to preview, then the
+same command with `--execute`. This uses the existing candidate's Git credentials
+and objects, bases a one-file commit on current OpenNeuro main, and preserves
+all other remote metadata and files. Independently changed target fields stop
+for review. It also backs up and patches these fields in the plain download.
+No annex transfer, analysis rerun, or new snapshot is performed. It refuses to
+run if 2.2.0 is already published. The operation is safe to repeat after a lost
+connection: already restored fields require no new remote commit.
+
+The candidate worktree and original release checkpoint remain unchanged; the
+repair commit is retained under a local `refs/metadata-repairs/` ref. **Do not
+rerun the old consolidated uploader** after this correction. Commit the small
+receipt under `results/openneuro_release/approval-metadata-v1`, refresh the
+OpenNeuro draft, and review it before publication.
