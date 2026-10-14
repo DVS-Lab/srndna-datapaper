@@ -1,0 +1,65 @@
+{
+  "errors": 0,
+  "warning_instances": 1529,
+  "issues": [
+    {
+      "severity": "warning",
+      "code": "JSON_KEY_RECOMMENDED",
+      "subcode": "HEDVersion",
+      "count": 1
+    },
+    {
+      "severity": "warning",
+      "code": "JSON_KEY_RECOMMENDED",
+      "subcode": "SourceDatasets",
+      "count": 1
+    },
+    {
+      "severity": "warning",
+      "code": "PARTICIPANT_ID_MISMATCH",
+      "subcode": "",
+      "count": 1
+    },
+    {
+      "severity": "warning",
+      "code": "SIDECAR_KEY_RECOMMENDED",
+      "subcode": "CogAtlasID",
+      "count": 220
+    },
+    {
+      "severity": "warning",
+      "code": "SIDECAR_KEY_RECOMMENDED",
+      "subcode": "CogPOID",
+      "count": 638
+    },
+    {
+      "severity": "warning",
+      "code": "SIDECAR_KEY_RECOMMENDED",
+      "subcode": "PartialFourierDirection",
+      "count": 668
+    }
+  ],
+  "primary_participants": 50,
+  "primary_rows_match_directories": true,
+  "ignored_auxiliary_directories": 48,
+  "auxiliary_files_changed": 0,
+  "files": 1835,
+  "exclusions": 48,
+  "categories": {
+    "root_metadata": 6,
+    "behavior_sidecar": 3,
+    "task_bold_sidecar": 3,
+    "event_repair": 4,
+    "event_sidecar": 3,
+    "behavior_tsv": 220,
+    "single_trial_trust": 218,
+    "single_trial_sub144": 4,
+    "reproducibility": 26,
+    "release_reproducibility": 10,
+    "raw_gzip_header": 668,
+    "raw_metadata": 668,
+    "scan_inventory": 2
+  },
+  "annex_files": 890,
+  "annex_bytes": 22576390240
+}
