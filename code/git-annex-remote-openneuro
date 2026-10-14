@@ -1,0 +1,3 @@
+#!/bin/sh
+# OpenNeuro's external git-annex protocol; use the existing CLI credentials.
+exec openneuro-deno special-remote "$@"

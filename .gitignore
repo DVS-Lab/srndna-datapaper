@@ -153,3 +153,6 @@ derivatives/tsnr
 derivatives/single_trials
 
 sub-*.html
+
+# Reviewed operational logs only; never include private DICOM extraction logs.
+!results/openneuro_release/consolidated-v1/run-*.log

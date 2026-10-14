@@ -1,5 +1,11 @@
 # Analysis Code
 
+## Consolidated OpenNeuro release
+
+Use [OPENNEURO_CONSOLIDATED_RELEASE.md](OPENNEURO_CONSOLIDATED_RELEASE.md) for
+the final, single ds003745 2.2.0 update. It supersedes the earlier sparse upload
+and recovery-commit instructions while preserving their completed repairs.
+
 ## Overview and disclaimers
 - run_* scripts loop through a list of subjects for a given script; e.g., run_fmriprep.sh loops all subjects through the fmriprep.sh script.
 - paths to input/output data should work without error, but check package/software installation
